@@ -117,6 +117,13 @@ h2 em{color:var(--gold);font-style:normal;}
 .binp{flex:1;padding:11px 13px;background:transparent;border:none;outline:none;color:#fff;font-size:12px;}
 .binp::placeholder{color:var(--dim);}
 .bsend{padding:0 14px;background:var(--gold);border:none;cursor:pointer;font-size:14px;color:#000;}
+.bimg{padding:0 12px;background:none;border:none;cursor:pointer;font-size:18px;color:var(--dim);}
+.bimg:hover{color:var(--gold);}
+.bpreview{padding:6px 12px;display:none;border-top:1px solid var(--border);align-items:center;gap:8px;background:#111;}
+.bpreview.show{display:flex;}
+.bpimg{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);}
+.bpcancel{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;}
+.msg-img{max-width:200px;border-radius:8px;margin-top:4px;display:block;}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
 .tc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;cursor:pointer;}
 .tc:hover{border-color:var(--gold);}
@@ -246,8 +253,15 @@ footer em{color:var(--gold);font-style:normal;}
         <span class="sg" onclick="askB('How do I do a cash up?')">Cash up</span>
         <span class="sg" onclick="askB('How do I record petty cash?')">Petty cash</span>
       </div>
+      <div class="bpreview" id="bpreview">
+        <img id="bpimg" class="bpimg" src="" alt="preview">
+        <span style="font-size:11px;color:var(--dim);flex:1">Image attached</span>
+        <button class="bpcancel" onclick="clearImg()">✕</button>
+      </div>
       <div class="binpr">
         <input class="binp" id="bi" placeholder="Type your question...">
+        <button class="bimg" onclick="document.getElementById('bfile').click()" title="Attach screenshot">📎</button>
+        <input type="file" id="bfile" accept="image/*" style="display:none" onchange="handleImg(this)">
         <button class="bsend" onclick="sendB()">&#10148;</button>
       </div>
     </div>
@@ -587,6 +601,7 @@ function addMsg(txt, type) {
   av.textContent = type === "bot" ? "🤖" : "👤";
   var bub = document.createElement("div");
   bub.className = "mbub";
+  bub.style.whiteSpace = "pre-line";
   bub.textContent = txt;
   d.appendChild(av);
   d.appendChild(bub);
@@ -607,14 +622,66 @@ function askB(msg) {
   document.getElementById("bi").value = msg;
   sendB();
 }
+var pendingImg = null;
+
+function handleImg(input) {
+  var file = input.files[0];
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) { alert("Image too large — please use a smaller screenshot"); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    pendingImg = e.target.result; // base64 data URL
+    var preview = document.getElementById("bpreview");
+    var pimg = document.getElementById("bpimg");
+    pimg.src = pendingImg;
+    preview.classList.add("show");
+  };
+  reader.readAsDataURL(file);
+  input.value = "";
+}
+
+function clearImg() {
+  pendingImg = null;
+  document.getElementById("bpreview").classList.remove("show");
+  document.getElementById("bpimg").src = "";
+}
+
 function sendB() {
   var inp = document.getElementById("bi");
   var msg = inp.value.trim();
-  if (!msg) return;
+  if (!msg && !pendingImg) return;
   inp.value = "";
-  addMsg(msg, "user");
+
+  // Show user message
+  if (pendingImg && msg) {
+    addMsgWithImg(msg, pendingImg, "user");
+  } else if (pendingImg) {
+    addMsgWithImg("📸 Screenshot attached", pendingImg, "user");
+  } else {
+    addMsg(msg, "user");
+  }
+
   var t = addTyping();
-  botHistory.push({role: "user", content: msg});
+
+  // Build message content for API
+  var userContent;
+  if (pendingImg) {
+    // Extract base64 and media type
+    var parts = pendingImg.split(",");
+    var meta = parts[0]; // e.g. data:image/jpeg;base64
+    var b64 = parts[1];
+    var mediaType = meta.split(":")[1].split(";")[0];
+    userContent = [
+      {type: "image", source: {type: "base64", media_type: mediaType, data: b64}},
+      {type: "text", text: msg || "What do you see in this screenshot? Help me understand what is happening in KasiPOS."}
+    ];
+  } else {
+    userContent = msg;
+  }
+
+  botHistory.push({role: "user", content: userContent});
+  clearImg();
+
   fetch("/.netlify/functions/chat", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
@@ -624,6 +691,8 @@ function sendB() {
   }).then(function(data) {
     t.remove();
     var reply = (data.content && data.content[0]) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
+    // Store text-only version in history for context
+    botHistory[botHistory.length - 1] = {role: "user", content: msg || "Screenshot sent"};
     botHistory.push({role: "assistant", content: reply});
     if (botHistory.length > 20) botHistory = botHistory.slice(-20);
     addMsg(reply, "bot");
@@ -631,6 +700,22 @@ function sendB() {
     t.remove();
     addMsg("Connection issue — please WhatsApp us at 074 831 5232 for immediate help", "bot");
   });
+}
+
+function addMsgWithImg(text, imgSrc, type) {
+  var el = document.getElementById("bm");
+  var d = document.createElement("div");
+  d.className = "msg " + (type === "bot" ? "b" : "u");
+  var av = document.createElement("div");
+  av.className = "mav";
+  av.textContent = type === "bot" ? "🤖" : "👤";
+  var bub = document.createElement("div");
+  bub.className = "mbub";
+  bub.innerHTML = '<div>' + text + '</div><img class="msg-img" src="' + imgSrc + '" alt="screenshot">';
+  d.appendChild(av);
+  d.appendChild(bub);
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
 }
 
 buildTabSet(GUIDES, "gt", "gp");
