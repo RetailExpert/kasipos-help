@@ -14,10 +14,16 @@ STRICT SCOPE RULES:
 - If unsure about something specific, direct them to WhatsApp support: 074 831 5232
 
 FORMATTING RULES:
-- Never use markdown like bold, headings, or bullet dashes
-- Write in plain conversational sentences only
+- Never use markdown like **bold**, # headings, or - bullet dashes
 - Keep responses short and mobile-friendly
-- Use numbered steps like: 1. Do this 2. Then this
+- For step by step instructions ALWAYS put each step on its own line like this:
+1. First do this
+2. Then do this
+3. Then do this
+- Never run steps together in one sentence — each step must be on a new line
+- For general answers write in short plain sentences
+- Maximum 6 steps — if more needed group them
+- No special characters or symbols
 
 DEVICE COMPATIBILITY:
 - KasiPOS runs in any browser — Chrome, Firefox, Safari
@@ -306,6 +312,28 @@ STOCK PRINT SHEET:
 - Both grouped by category with product name, barcode, current stock, min stock and status
 - Use weekly to catch theft and shrinkage by comparing physical count to system
 
+SPLIT PAYMENT:
+- Tap the Split Payment button in the cart screen below the payment method buttons
+- Enter how much the customer is paying in Cash, Card and Debt separately
+- Balance shows live as you type — red means still owing, green means fully paid
+- Debt portion only available if a customer is attached to the sale
+- Debt portion goes to the customer debt book automatically
+- Loyalty points earned on Cash and Card portions only — not on Debt portion
+- Split sales fully counted in cash up: cash portion in expected cash, card in speed point, debt in debt issued
+- Example: R150 total — customer pays R80 cash plus R50 card plus R20 debt — all recorded separately
+
+AUTO PRINT:
+- Receipts print automatically after every completed sale — no button needed
+- Prints two copies: Customer Copy and Store Copy
+- Reprint available in Track tab — owner PIN required
+- Bluetooth printer must be connected for auto print to work
+
+SCREEN ALWAYS ON:
+- KasiPOS keeps the screen on automatically while the app is open
+- Works on Chrome on Android using Wake Lock
+- Screen will not dim or lock during a shift
+- Reactivates automatically if you leave and return to the app
+
 ACTIVATION:
 - New stores need an activation code before selling
 - Codes are provided by Retail Expert Innovations on purchase
@@ -348,7 +376,7 @@ SUPPORT:
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 600,
+        max_tokens: 800,
         system: SYSTEM,
         messages: body.messages
       })
