@@ -273,6 +273,58 @@ RECEIPT PRINTER:
 - Also prints cash ups, day end summaries and stock sheets
 - Troubleshoot: check blue light is on, check paper loaded correctly, check Bluetooth connected in device settings, turn off and back on, forget device in Bluetooth settings and re-pair
 
+CASH UP SCREEN - LOGIC AND CALCULATIONS:
+- Trading summary at top shows: Sales Today, Money Received, Refunds, Petty Cash
+- Tap Show Full Details to see full breakdown
+- Sales Today: total value of all sales processed during the business day
+- Money Received: cash and card sales plus debt collected minus refunds — this is what should physically be in the till and card machine
+- Debt Issued: value of sales given on credit — this money is NOT in the till
+- Refunds: total refunds processed today — reduces money received
+- Petty Cash: cash taken from till for small expenses — reduces expected cash
+- Expected Cash: opening float plus all cash sales plus cash debt collected minus cash refunds minus petty cash
+- Cash Variance: physical cash counted minus expected cash — Short means missing money, Over means extra
+- Expected Speed Point: total of all card machine sales minus card refunds
+- Speed Point Variance: card machine total entered minus expected card total
+- Total Banked: physical cash plus physical speed point combined
+- Save Cash Up requires Physical Cash Counted and Speed Point total to be entered first
+- Day End requires a cash up to be saved first for the day — cannot skip cash up
+- History and Paperwork button only appears after Day End or if previous history exists
+- Petty Cash button requires owner PIN — all cash withdrawals must be authorised
+- Cloud Sync button syncs latest data to owner dashboard
+
+STOCK SECURITY - OWNER PIN REQUIRED FOR ALL STOCK ACTIONS:
+- Add Product, Edit Product, Delete Product all require owner PIN
+- Quick Restock (plus button on product) requires owner PIN
+- Receive Stock from supplier requires owner PIN
+- Add Supplier requires owner PIN
+- Print Stock Sheet requires owner PIN
+- This protects against staff changing prices or manipulating stock levels
+
+STOCK PRINT SHEET:
+- Tap Print Sheet button in Stock tab header — owner PIN required
+- Two options: Stock Take Sheet (blank count for weekly physical count) or Stock On Hand Report
+- Both grouped by category with product name, barcode, current stock, min stock and status
+- Use weekly to catch theft and shrinkage by comparing physical count to system
+
+ACTIVATION:
+- New stores need an activation code before selling
+- Codes are provided by Retail Expert Innovations on purchase
+- Contact WhatsApp 074 831 5232 to get your activation code
+
+CLOUD ACCOUNT:
+- Tap Cloud button in header to sign in or create account
+- Password needs: 8+ characters, one number, one uppercase, one special character
+- Forgot password: tap Forgot password — reset link sent to email — check spam folder
+- Once signed in the cloud button shows username in green
+- Cloud Sync saves all store data as backup
+- Pull Stores From Cloud restores data on a new device
+
+DAY END EXPERIENCE:
+- Shows a dramatic animation with spinning moon, pulsing rings and stars
+- Steps tick off: Saving transactions, Locking reports, Syncing to cloud, Closing business day
+- Then DAY ENDED gold text with confetti — auto closes after 3.5 seconds
+- History and Paperwork button appears in Cash Up after Day End completes
+
 PRICING:
 - Software only: R500 once off — no monthly fees ever
 - Full kit with tablet plus printer plus software: R3499 once off — no monthly fees ever
