@@ -117,13 +117,6 @@ h2 em{color:var(--gold);font-style:normal;}
 .binp{flex:1;padding:11px 13px;background:transparent;border:none;outline:none;color:#fff;font-size:12px;}
 .binp::placeholder{color:var(--dim);}
 .bsend{padding:0 14px;background:var(--gold);border:none;cursor:pointer;font-size:14px;color:#000;}
-.bimg{padding:0 12px;background:none;border:none;cursor:pointer;font-size:18px;color:var(--dim);}
-.bimg:hover{color:var(--gold);}
-.bpreview{padding:6px 12px;display:none;border-top:1px solid var(--border);align-items:center;gap:8px;background:#111;}
-.bpreview.show{display:flex;}
-.bpimg{width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid var(--border);}
-.bpcancel{background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;}
-.msg-img{max-width:200px;border-radius:8px;margin-top:4px;display:block;}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
 .tc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;cursor:pointer;}
 .tc:hover{border-color:var(--gold);}
@@ -236,12 +229,12 @@ footer em{color:var(--gold);font-style:normal;}
 
 <div id="s-bot" class="sec">
   <h2>AI <em>ASSISTANT</em></h2>
-  <p class="sub">Available 24/7 — ask anything about KasiPOS in any language</p>
+  <p class="sub">Powered by Claude AI — ask anything about KasiPOS in any language</p>
   <div class="bwrap">
     <div class="bbox">
       <div class="bhead">
         <div class="bav">&#129302;</div>
-        <div><div class="bname">KasiBot</div><div class="bstat">Available 24/7</div></div>
+        <div><div class="bname">KasiBot</div><div class="bstat">Powered by Claude AI</div></div>
       </div>
       <div class="bmsgs" id="bm">
         <div class="msg b"><div class="mav">&#129302;</div><div class="mbub">Sawubona! I am KasiBot. Ask me anything about KasiPOS — in English, Zulu, Xhosa, or a mix!</div></div>
@@ -253,15 +246,8 @@ footer em{color:var(--gold);font-style:normal;}
         <span class="sg" onclick="askB('How do I do a cash up?')">Cash up</span>
         <span class="sg" onclick="askB('How do I record petty cash?')">Petty cash</span>
       </div>
-      <div class="bpreview" id="bpreview">
-        <img id="bpimg" class="bpimg" src="" alt="preview">
-        <span style="font-size:11px;color:var(--dim);flex:1">Image attached</span>
-        <button class="bpcancel" onclick="clearImg()">✕</button>
-      </div>
       <div class="binpr">
         <input class="binp" id="bi" placeholder="Type your question...">
-        <button class="bimg" onclick="document.getElementById('bfile').click()" title="Attach screenshot">📎</button>
-        <input type="file" id="bfile" accept="image/*" style="display:none" onchange="handleImg(this)">
         <button class="bsend" onclick="sendB()">&#10148;</button>
       </div>
     </div>
@@ -311,8 +297,10 @@ var GUIDES = [
   {id:"product",label:"📦 Adding Products",banner:{type:"info",text:"Owner access required to add or edit products."},
    steps:[
     {img:null,title:"Go to Stock Menu",desc:"From the main screen tap STOCK in the bottom navigation bar.",tags:["Bottom nav tap STOCK"],tip:"Only the owner PIN can add or edit products."},
-    {img:null,title:"Tap Add New Product",desc:"Tap the Add Product button. Fill in the product name, price and category.",tags:["Product name — required","Selling price — required","Category — required","Stock quantity — optional"],tip:"Adding stock quantity helps you track when you are running low."},
-    {img:null,title:"Save the Product",desc:"Tap Save. Your product appears on the sell screen immediately.",tags:["Product active instantly","Appears in correct category"],tip:"You can edit or delete products anytime from the Stock menu."}
+    {img:null,title:"Use the Pre-Loaded Catalog",desc:"Tap the Catalog button in Stock to search 140+ pre-loaded South African products with images already set up. Find your product and tap Add to My Store.",tags:["140+ SA products ready","Real product images included","Search by name or brand","Tap Add to My Store"],tip:"Check the catalog first before adding manually — your product may already be there with a clean image."},
+    {img:null,title:"Tap Add New Product",desc:"Tap the Add Product button for products not in the catalog. Fill in the product name, price and category.",tags:["Product name — required","Selling price — required","Category — required","Stock quantity — optional"],tip:"Adding stock quantity helps you track when you are running low."},
+    {img:null,title:"Snap a Product Photo",desc:"Tap the camera button at the top of the Add Product form. Your phone camera opens — point at the product and take the photo. It uploads automatically.",tags:["📷 Take Photo button at top of form","Rear camera opens automatically","Photo saves with the product","Works on any Android phone"],tip:"A real product photo makes your sell screen look professional and helps cashiers find products faster."},
+    {img:null,title:"Save the Product",desc:"Tap Save Product. Your product appears on the sell screen immediately with its photo.",tags:["Product active instantly","Photo displays on sell screen","Appears in correct category"],tip:"You can edit or change the photo anytime by tapping the pencil icon on the product."}
    ]},
   {id:"reports",label:"📊 Sales Reports",banner:{type:"tip",text:"Check reports daily to understand your busiest hours and top products."},
    steps:[
@@ -384,10 +372,14 @@ var VIDEOS = [
 
 var FAQS = [
   {q:"Does KasiPOS work without internet?",a:"Yes! KasiPOS works fully offline. Sales are saved on device and sync to the cloud automatically when internet returns. Nothing is ever lost."},
+  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever. Spaza shop software only: R799. Tavern software only: R1,199. Full kit with tablet, Bluetooth printer and software: R3,999. Contact us on WhatsApp 074 831 5232 to order."},
   {q:"How do I access my store remotely?",a:"Log into kasipos-dashboard.netlify.app on any phone using your owner credentials. See all sales, reports and stock levels from anywhere."},
   {q:"Can I have more than one staff member?",a:"Yes. Go to Settings then Staff and add as many staff as you need. Each gets their own PIN and you control what they can access."},
   {q:"How do I handle a debt sale?",a:"On the cart screen tap Debt, then select an Existing Customer or add a New Customer. The debt is tracked automatically."},
-  {q:"What if I make a mistake on a sale?",a:"Go to Sales History, find the transaction and tap Refund. The system reverses the sale and updates stock automatically."}
+  {q:"What if I make a mistake on a sale?",a:"Go to Sales History, find the transaction and tap Refund. The system reverses the sale and updates stock automatically."},
+  {q:"How do I add a product photo?",a:"When adding a new product tap the camera button at the top of the Add Product form. Your phone camera opens — snap the product and the photo saves automatically. You can also use the pre-loaded catalog which has photos for 140+ South African products already built in."},
+  {q:"What is the pre-loaded catalog?",a:"KasiPOS comes with 140+ common South African products pre-loaded with clean product images — Knorr, Lucky Star, Sunfoil, Albany, Clover and many more. Go to Stock and tap Catalog to search and add them to your store in seconds."},
+  {q:"Will the screen turn off during a shift?",a:"No. KasiPOS keeps the screen on automatically while the app is open. The screen will not dim or lock during trading so your cashier never has to unlock the device mid-sale."}
 ];
 
 var botHistory = [];
@@ -601,7 +593,6 @@ function addMsg(txt, type) {
   av.textContent = type === "bot" ? "🤖" : "👤";
   var bub = document.createElement("div");
   bub.className = "mbub";
-  bub.style.whiteSpace = "pre-line";
   bub.textContent = txt;
   d.appendChild(av);
   d.appendChild(bub);
@@ -622,66 +613,14 @@ function askB(msg) {
   document.getElementById("bi").value = msg;
   sendB();
 }
-var pendingImg = null;
-
-function handleImg(input) {
-  var file = input.files[0];
-  if (!file) return;
-  if (file.size > 4 * 1024 * 1024) { alert("Image too large — please use a smaller screenshot"); return; }
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    pendingImg = e.target.result; // base64 data URL
-    var preview = document.getElementById("bpreview");
-    var pimg = document.getElementById("bpimg");
-    pimg.src = pendingImg;
-    preview.classList.add("show");
-  };
-  reader.readAsDataURL(file);
-  input.value = "";
-}
-
-function clearImg() {
-  pendingImg = null;
-  document.getElementById("bpreview").classList.remove("show");
-  document.getElementById("bpimg").src = "";
-}
-
 function sendB() {
   var inp = document.getElementById("bi");
   var msg = inp.value.trim();
-  if (!msg && !pendingImg) return;
+  if (!msg) return;
   inp.value = "";
-
-  // Show user message
-  if (pendingImg && msg) {
-    addMsgWithImg(msg, pendingImg, "user");
-  } else if (pendingImg) {
-    addMsgWithImg("📸 Screenshot attached", pendingImg, "user");
-  } else {
-    addMsg(msg, "user");
-  }
-
+  addMsg(msg, "user");
   var t = addTyping();
-
-  // Build message content for API
-  var userContent;
-  if (pendingImg) {
-    // Extract base64 and media type
-    var parts = pendingImg.split(",");
-    var meta = parts[0]; // e.g. data:image/jpeg;base64
-    var b64 = parts[1];
-    var mediaType = meta.split(":")[1].split(";")[0];
-    userContent = [
-      {type: "image", source: {type: "base64", media_type: mediaType, data: b64}},
-      {type: "text", text: msg || "What do you see in this screenshot? Help me understand what is happening in KasiPOS."}
-    ];
-  } else {
-    userContent = msg;
-  }
-
-  botHistory.push({role: "user", content: userContent});
-  clearImg();
-
+  botHistory.push({role: "user", content: msg});
   fetch("/.netlify/functions/chat", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
@@ -691,8 +630,6 @@ function sendB() {
   }).then(function(data) {
     t.remove();
     var reply = (data.content && data.content[0]) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
-    // Store text-only version in history for context
-    botHistory[botHistory.length - 1] = {role: "user", content: msg || "Screenshot sent"};
     botHistory.push({role: "assistant", content: reply});
     if (botHistory.length > 20) botHistory = botHistory.slice(-20);
     addMsg(reply, "bot");
@@ -700,22 +637,6 @@ function sendB() {
     t.remove();
     addMsg("Connection issue — please WhatsApp us at 074 831 5232 for immediate help", "bot");
   });
-}
-
-function addMsgWithImg(text, imgSrc, type) {
-  var el = document.getElementById("bm");
-  var d = document.createElement("div");
-  d.className = "msg " + (type === "bot" ? "b" : "u");
-  var av = document.createElement("div");
-  av.className = "mav";
-  av.textContent = type === "bot" ? "🤖" : "👤";
-  var bub = document.createElement("div");
-  bub.className = "mbub";
-  bub.innerHTML = '<div>' + text + '</div><img class="msg-img" src="' + imgSrc + '" alt="screenshot">';
-  d.appendChild(av);
-  d.appendChild(bub);
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
 }
 
 buildTabSet(GUIDES, "gt", "gp");
