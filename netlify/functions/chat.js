@@ -1,214 +1,654 @@
-exports.handler = async function(event) {
-  if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KasiPOS Help Centre</title>
+<style>
+:root{--gold:#C9A84C;--black:#0A0A0A;--card:#181818;--border:rgba(201,168,76,0.2);--text:#CCCCCC;--dim:#777;--green:#2ECC71;--red:#E74C3C;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--black);color:var(--text);font-family:Arial,sans-serif;min-height:100vh;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,10,0.97);border-bottom:1px solid var(--border);height:50px;display:flex;align-items:center;padding:0 12px;gap:4px;overflow-x:auto;}
+nav::-webkit-scrollbar{display:none;}
+.brand{font-size:18px;font-weight:900;color:var(--gold);margin-right:8px;white-space:nowrap;}
+.brand span{color:#fff;}
+.nbtn{flex-shrink:0;padding:5px 10px;border-radius:4px;border:none;background:transparent;color:var(--dim);font-size:11px;font-weight:700;cursor:pointer;}
+.nbtn.active,.nbtn:hover{color:var(--gold);background:rgba(201,168,76,0.12);}
+.sec{display:none;max-width:840px;margin:0 auto;padding:70px 16px 60px;}
+.sec.active{display:block;}
+.hero{text-align:center;padding:80px 16px 36px;background:linear-gradient(180deg,rgba(201,168,76,0.06) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.hero h1{font-size:clamp(32px,7vw,60px);font-weight:900;color:#fff;line-height:1;margin-bottom:8px;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p{font-size:13px;color:var(--dim);max-width:400px;margin:0 auto 20px;line-height:1.6;}
+.sbar{display:flex;max-width:440px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.sbar input{flex:1;padding:12px 14px;background:transparent;border:none;outline:none;color:#fff;font-size:13px;}
+.sbar input::placeholder{color:var(--dim);}
+.sbar button{padding:0 16px;background:var(--gold);border:none;cursor:pointer;font-weight:700;font-size:13px;color:#000;}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;max-width:840px;margin:28px auto 0;padding:0 16px;}
+.tile{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer;}
+.tile:hover{border-color:var(--gold);}
+.tile .ti{font-size:20px;margin-bottom:6px;}
+.tile .tl{font-size:11px;font-weight:700;color:#fff;}
+h2{font-size:26px;font-weight:900;color:#fff;margin-bottom:4px;}
+h2 em{color:var(--gold);font-style:normal;}
+.sub{font-size:12px;color:var(--dim);margin-bottom:20px;}
+.gtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.gtab{padding:7px 12px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:11px;font-weight:700;color:var(--dim);}
+.gtab.active{background:var(--gold);border-color:var(--gold);color:#000;}
+.gpanel{display:none;}
+.gpanel.active{display:block;}
+.vstep-noimg{background:var(--card);border:1px solid rgba(255,255,255,0.06);padding:16px 18px;margin-bottom:-1px;overflow:hidden;}
+.vstep-noimg:first-of-type{border-radius:10px 10px 0 0;}
+.vstep-noimg:last-of-type{border-radius:0 0 10px 10px;margin-bottom:16px;}
+.vstep-num{width:24px;height:24px;background:var(--gold);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#000;margin-bottom:8px;}
+.vstep-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.vstep-desc{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px;}
+.vtag{font-size:11px;color:var(--text);padding:2px 0;padding-left:12px;position:relative;}
+.vtag:before{content:"•";color:var(--gold);position:absolute;left:0;}
+.vtip{margin-top:8px;padding:6px 10px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--gold);line-height:1.4;}
+.banner{padding:10px 12px;border-radius:7px;margin-bottom:12px;font-size:12px;line-height:1.5;}
+.banner.info{background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);color:#7ec8e3;}
+.banner.warn{background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);color:#e88;}
+.banner.tip{background:rgba(201,168,76,0.1);border:1px solid var(--border);color:var(--gold);}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.vcard{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;}
+.vcard:hover{border-color:var(--gold);}
+.vthumb{aspect-ratio:16/9;background:#1a1a1a;display:flex;align-items:center;justify-content:center;position:relative;}
+.vticon{font-size:28px;opacity:0.4;}
+.vplay{position:absolute;width:38px;height:38px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#000;}
+.vdur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,0.8);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:2px;}
+.vinfo{padding:10px 12px;}
+.vtit{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;}
+.vdes{font-size:11px;color:var(--dim);line-height:1.4;}
+.flist{display:flex;flex-direction:column;gap:6px;}
+.fi{background:var(--card);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.fq{padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:#fff;}
+.fq.open{color:var(--gold);}
+.fa{max-height:0;overflow:hidden;transition:max-height 0.3s ease;font-size:12px;color:var(--text);line-height:1.6;}
+.fa.open{max-height:300px;padding:10px 14px;border-top:1px solid rgba(255,255,255,0.05);}
+.qwrap{max-width:520px;}
+.qpbar{height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-bottom:6px;}
+.qpfill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.4s;}
+.qptxt{font-size:10px;color:var(--dim);font-weight:700;margin-bottom:14px;}
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.qnum{font-size:9px;font-weight:700;color:var(--gold);letter-spacing:2px;margin-bottom:6px;}
+.qtext{font-size:14px;font-weight:700;color:#fff;margin-bottom:14px;line-height:1.4;}
+.qopts{display:flex;flex-direction:column;gap:6px;}
+.qopt{padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:7px;cursor:pointer;font-size:12px;color:var(--text);text-align:left;width:100%;}
+.qopt:hover:not([disabled]){border-color:var(--gold);color:#fff;}
+.qopt.correct{border-color:var(--green)!important;background:rgba(46,204,113,0.1);color:var(--green);}
+.qopt.wrong{border-color:var(--red)!important;background:rgba(231,76,60,0.1);color:var(--red);}
+.qfb{margin-top:10px;padding:8px 12px;border-radius:5px;font-size:11px;font-weight:600;display:none;}
+.qfb.show{display:block;}
+.qfb.c{background:rgba(46,204,113,0.1);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
+.qfb.w{background:rgba(231,76,60,0.1);color:var(--red);border:1px solid rgba(231,76,60,0.3);}
+.qnext{margin-top:12px;padding:8px 20px;background:var(--gold);border:none;border-radius:5px;font-weight:700;font-size:13px;color:#000;cursor:pointer;display:none;}
+.qnext.show{display:inline-block;}
+.qresult{text-align:center;padding:28px 18px;display:none;}
+.qresult.show{display:block;}
+.qscore{font-size:60px;font-weight:900;color:var(--gold);}
+.qrlbl{font-size:12px;color:var(--dim);margin-bottom:10px;}
+.qrmsg{font-size:14px;color:#fff;font-weight:700;margin-bottom:16px;}
+.qrestart{padding:8px 24px;background:var(--gold);border:none;border-radius:5px;font-weight:700;font-size:13px;color:#000;cursor:pointer;}
+.bwrap{max-width:520px;}
+.bbox{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.bhead{padding:12px 14px;background:#111;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.bav{width:30px;height:30px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.bname{font-weight:700;font-size:12px;color:#fff;}
+.bstat{font-size:10px;color:var(--green);}
+.bmsgs{height:300px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.msg{display:flex;gap:6px;max-width:85%;}
+.msg.u{align-self:flex-end;flex-direction:row-reverse;}
+.mav{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;}
+.msg.b .mav{background:var(--gold);}
+.msg.u .mav{background:rgba(255,255,255,0.08);}
+.mbub{padding:8px 11px;border-radius:10px;font-size:12px;line-height:1.5;}
+.msg.b .mbub{background:rgba(255,255,255,0.05);color:var(--text);border-bottom-left-radius:3px;}
+.msg.u .mbub{background:var(--gold);color:#000;font-weight:600;border-bottom-right-radius:3px;}
+.typing{display:flex;gap:3px;padding:8px 11px;}
+.typing span{width:5px;height:5px;background:var(--dim);border-radius:50%;animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.bsugg{padding:8px 12px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border);background:#111;}
+.sg{padding:4px 9px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:14px;font-size:10px;font-weight:600;color:var(--gold);cursor:pointer;}
+.sg:hover{background:var(--gold);color:#000;}
+.binpr{display:flex;border-top:1px solid var(--border);}
+.binp{flex:1;padding:11px 13px;background:transparent;border:none;outline:none;color:#fff;font-size:12px;}
+.binp::placeholder{color:var(--dim);}
+.bsend{padding:0 14px;background:var(--gold);border:none;cursor:pointer;font-size:14px;color:#000;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
+.tc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;cursor:pointer;}
+.tc:hover{border-color:var(--gold);}
+.ticon{font-size:24px;margin-bottom:6px;}
+.ttit{font-size:12px;font-weight:700;color:#fff;margin-bottom:3px;}
+.tdes{font-size:11px;color:var(--dim);line-height:1.4;}
+.tsteps{display:none;margin-top:8px;}
+.tsteps.open{display:block;}
+.tstep{display:flex;gap:6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.04);font-size:11px;color:var(--text);}
+.tsn{width:14px;height:14px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#000;flex-shrink:0;margin-top:2px;}
+.cboxes{display:flex;flex-wrap:wrap;gap:12px;}
+.cbox{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center;max-width:300px;}
+.cicon{font-size:32px;margin-bottom:8px;}
+.cbox h3{font-size:17px;font-weight:900;color:#fff;margin-bottom:4px;}
+.cbox p{font-size:12px;color:var(--dim);margin-bottom:12px;line-height:1.5;}
+.cbtn{display:inline-block;padding:8px 20px;background:var(--gold);border:none;border-radius:5px;font-weight:700;font-size:13px;color:#000;cursor:pointer;text-decoration:none;}
+.chrs{font-size:10px;color:var(--dim);margin-top:8px;}
+.cspanel{text-align:center;padding:48px 20px;background:var(--card);border:1px solid var(--border);border-radius:10px;}
+.csbig{font-size:48px;margin-bottom:12px;opacity:0.3;}
+.cspanel h3{font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;}
+.cspanel p{font-size:12px;color:var(--dim);max-width:280px;margin:0 auto;line-height:1.6;}
+.csbadge{display:inline-block;margin-top:12px;padding:4px 12px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:14px;font-size:10px;font-weight:700;color:var(--gold);}
+footer{border-top:1px solid var(--border);padding:16px;text-align:center;font-size:10px;color:var(--dim);margin-top:40px;}
+footer em{color:var(--gold);font-style:normal;}
+</style>
+</head>
+<body>
 
-  const KEY = process.env.ANTHROPIC_API_KEY;
-  if (!KEY) return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured' }) };
+<nav>
+  <div class="brand">KASI<span>POS</span></div>
+  <button class="nbtn active" onclick="showSec('home',this)">&#127968; Home</button>
+  <button class="nbtn" onclick="showSec('guides',this)">&#128218; Guides</button>
+  <button class="nbtn" onclick="showSec('ops',this)">&#9881; Operations</button>
+  <button class="nbtn" onclick="showSec('videos',this)">&#9654; Videos</button>
+  <button class="nbtn" onclick="showSec('quiz',this)">&#127919; Quiz</button>
+  <button class="nbtn" onclick="showSec('bot',this)">&#129302; AI Help</button>
+  <button class="nbtn" onclick="showSec('fix',this)">&#128295; Fix It</button>
+  <button class="nbtn" onclick="showSec('contact',this)">&#128242; Contact</button>
+</nav>
 
-  const SYSTEM = `You are KasiBot, the support assistant for KasiPOS — a full retail management system built specifically for South African spaza shops, kota stands, and taverns by Retail Expert Innovations (Pty) Ltd. KasiPOS is not just a basic POS — it is a complete system including sales, debt book, loyalty, stock management, staff control, cloud sync and reporting.
+<div id="s-home" class="sec active">
+  <div class="hero">
+    <p style="font-size:10px;font-weight:700;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">KasiPOS Support</p>
+    <h1>HOW CAN WE <em>HELP</em> YOU?</h1>
+    <p>Guides, videos, quizzes and AI support — everything to keep your store running smoothly.</p>
+    <div class="sbar">
+      <input id="si" type="text" placeholder="Search... e.g. add product, cash up">
+      <button onclick="doSearch()">SEARCH</button>
+    </div>
+  </div>
+  <div class="tiles">
+    <div class="tile" onclick="showSec('guides',null)"><div class="ti">&#128218;</div><div class="tl">Step Guides</div></div>
+    <div class="tile" onclick="showSec('ops',null)"><div class="ti">&#9881;</div><div class="tl">Operations</div></div>
+    <div class="tile" onclick="showSec('videos',null)"><div class="ti">&#9654;</div><div class="tl">Videos</div></div>
+    <div class="tile" onclick="showSec('quiz',null)"><div class="ti">&#127919;</div><div class="tl">Quiz</div></div>
+    <div class="tile" onclick="showSec('bot',null)"><div class="ti">&#129302;</div><div class="tl">AI Assistant</div></div>
+    <div class="tile" onclick="showSec('fix',null)"><div class="ti">&#128295;</div><div class="tl">Fix a Problem</div></div>
+    <div class="tile" onclick="showSec('contact',null)"><div class="ti">&#128242;</div><div class="tl">Contact Us</div></div>
+  </div>
+  <div style="max-width:840px;margin:32px auto 0;padding:0 16px;">
+    <h2>POPULAR <em>QUESTIONS</em></h2>
+    <p class="sub">Quick answers to what most store owners ask</p>
+    <div class="flist" id="hfaq"></div>
+  </div>
+</div>
 
-STRICT SCOPE RULES:
-- Only answer questions about KasiPOS and running a spaza shop or informal trading business
-- If someone asks anything unrelated, politely redirect them
-- Never provide legal, financial, or medical advice or help with anything illegal
-- You are a KasiPOS support bot — not a general AI assistant
-- If unsure about something specific, direct them to WhatsApp support: 074 831 5232
+<div id="s-guides" class="sec">
+  <h2>STEP-BY-STEP <em>GUIDES</em></h2>
+  <p class="sub">Follow along with real screenshots from the KasiPOS app</p>
+  <div class="gtabs" id="gt"></div>
+  <div id="gp"></div>
+</div>
 
-FORMATTING RULES:
-- Never use markdown like **bold**, # headings, or - bullet dashes
-- Keep responses short and mobile-friendly
-- For step by step instructions ALWAYS put each step on its own line like this:
-1. First do this
-2. Then do this
-3. Then do this
-- Never run steps together in one sentence — each step must be on a new line
-- For general answers write in short plain sentences
-- Maximum 6 steps — if more needed group them
-- No special characters or symbols
+<div id="s-ops" class="sec">
+  <h2>STORE <em>OPERATIONS</em></h2>
+  <p class="sub">Cash up, petty cash, new store setup and more</p>
+  <div class="gtabs" id="ot"></div>
+  <div id="op"></div>
+</div>
 
-PRICING:
-- Spaza shop software only: R799 once off — no monthly fees ever
-- Tavern software only: R1,199 once off — no monthly fees ever
-- Full kit with tablet plus Bluetooth printer plus software: R3,999 once off — no monthly fees ever
-- Bulk and partnership pricing available for organizations and NGOs
-- Contact WhatsApp 074 831 5232 to order or for pricing enquiries
+<div id="s-videos" class="sec">
+  <h2>VIDEO <em>TUTORIALS</em></h2>
+  <p class="sub">Short videos covering every feature</p>
+  <div class="vgrid" id="vg"></div>
+</div>
 
-PRODUCT CATALOG:
-- KasiPOS comes with 140+ pre-loaded South African products with real product images
-- Catalog includes: Knorr soups, Lucky Star pilchards, Sunfoil oil, Albany bread, Clover milk, Nivea, Vaseline, OMO, MAQ, KOO, Freshpak, Ricoffy and many more
-- Go to Stock tab and tap Catalog to search and add catalog products to your store
-- When you tap a catalog product you must set the selling price, stock quantity and supplier before it saves
-- No product can be added to your store without a price and stock quantity — the system blocks incomplete products
-- Catalog products already have clean product images — no setup needed
-- For products not in the catalog use the camera feature to snap a photo
+<div id="s-quiz" class="sec">
+  <h2>TEST YOUR <em>KNOWLEDGE</em></h2>
+  <p class="sub">8 questions — make sure you and your staff know KasiPOS</p>
+  <div class="qwrap">
+    <div id="qmain">
+      <div class="qpbar"><div class="qpfill" id="qbar" style="width:0%"></div></div>
+      <div class="qptxt" id="qpt">Question 1 of 8</div>
+      <div class="qcard">
+        <div class="qnum" id="qn">QUESTION 1</div>
+        <div class="qtext" id="qt"></div>
+        <div class="qopts" id="qo"></div>
+        <div class="qfb" id="qf"></div>
+        <button class="qnext" id="qnx" onclick="nextQ()">NEXT</button>
+      </div>
+    </div>
+    <div class="qcard qresult" id="qr">
+      <div class="qscore" id="qs"></div>
+      <div class="qrlbl">YOUR SCORE</div>
+      <div class="qrmsg" id="qm"></div>
+      <button class="qrestart" onclick="startQuiz()">TRY AGAIN</button>
+    </div>
+  </div>
+</div>
 
-BARCODES AND SCANNING:
-- Every product in KasiPOS has a barcode — either a real manufacturer barcode or a KasiPOS auto-generated code
-- Auto-generated codes look like KP-BEV-0001, KP-GRC-0002 etc — unique per product, never duplicated
-- When you add a product (catalog or manual) the system generates a barcode automatically if none exists
-- After adding a product the system prompts you to print a barcode label immediately
-- Print the label and stick it on the shelf so cashiers can scan at checkout
-- Live camera scanner: tap the camera icon on the sell screen — the phone camera opens with a gold targeting box
-- Point the camera at any barcode — the system detects it automatically with no button press needed
-- If the barcode matches a product in your store it adds to cart instantly
-- If not found in your store the system searches online — if found online you set the price and add it
-- If not found anywhere tap Add and Snap Photo to add manually with a photo
-- Physical Bluetooth barcode scanners also work — they type the barcode into the field automatically
-- Live camera scanning requires HTTPS — works on kasipos-app.netlify.app, not on local files
+<div id="s-bot" class="sec">
+  <h2>AI <em>ASSISTANT</em></h2>
+  <p class="sub">Powered by Claude AI — ask anything about KasiPOS in any language</p>
+  <div class="bwrap">
+    <div class="bbox">
+      <div class="bhead">
+        <div class="bav">&#129302;</div>
+        <div><div class="bname">KasiBot</div><div class="bstat">Powered by Claude AI</div></div>
+      </div>
+      <div class="bmsgs" id="bm">
+        <div class="msg b"><div class="mav">&#129302;</div><div class="mbub">Sawubona! I am KasiBot. Ask me anything about KasiPOS — in English, Zulu, Xhosa, or a mix!</div></div>
+      </div>
+      <div class="bsugg">
+        <span class="sg" onclick="askB('How do I process a sale?')">Process sale</span>
+        <span class="sg" onclick="askB('How do I add a product?')">Add product</span>
+        <span class="sg" onclick="askB('My printer is not working')">Printer issue</span>
+        <span class="sg" onclick="askB('How do I do a cash up?')">Cash up</span>
+        <span class="sg" onclick="askB('How do I record petty cash?')">Petty cash</span>
+      </div>
+      <div class="binpr">
+        <input class="binp" id="bi" placeholder="Type your question...">
+        <button class="bsend" onclick="sendB()">&#10148;</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-BARCODE LABEL PRINTING:
-- After adding any product a prompt appears asking to print a barcode label
-- Tap Print Label Now to open the label in a new window
-- Tap the Print Label button and select your printer
-- Label shows: store name, product name, price and scannable barcode
-- Label is sized for 58mm thermal printer paper
-- You can also print labels anytime from the Stock tab — tap the three dots next to any product then tap Print Barcode Label
-- Stick labels on shelves so cashiers can scan products at checkout instead of searching manually
+<div id="s-fix" class="sec">
+  <h2>FIX A <em>PROBLEM</em></h2>
+  <p class="sub">Tap any issue to see the fix step by step</p>
+  <div class="tgrid" id="tg"></div>
+</div>
 
-STOCK TAB - THREE DOT MENU:
-- Each product in the Stock tab has a plus Stock button and a three dots button
-- Tap three dots to open the product actions menu
-- Actions available: Add Stock, Edit Product, Print Barcode Label
-- This keeps the stock screen clean and simple — one tap for the most common action, menu for everything else
+<div id="s-contact" class="sec">
+  <h2>CONTACT <em>SUPPORT</em></h2>
+  <p class="sub">Cannot find your answer? Reach out directly</p>
+  <div class="cboxes">
+    <div class="cbox">
+      <div class="cicon">&#128172;</div>
+      <h3>WHATSAPP SUPPORT</h3>
+      <p>Chat with us directly for technical help and onboarding.</p>
+      <a href="https://wa.me/27748315232" target="_blank" class="cbtn">WHATSAPP NOW</a>
+      <div class="chrs">Mon-Fri 5pm-8pm | Weekends</div>
+    </div>
+    <div class="cbox">
+      <div class="cicon">&#127760;</div>
+      <h3>OWNER DASHBOARD</h3>
+      <p>Monitor your store remotely from any phone anytime.</p>
+      <a href="https://kasipos-dashboard.netlify.app" target="_blank" class="cbtn">OPEN DASHBOARD</a>
+      <div class="chrs">Requires owner login</div>
+    </div>
+  </div>
+</div>
 
-CAMERA FEATURE FOR PRODUCTS:
-- When adding a new product tap the camera button at the top of the Add Product form
-- The rear camera opens automatically — point at the product and take the photo
-- Photo previews immediately and uploads to the cloud automatically
-- Works on any Android phone or tablet
-- Real product photos make the sell screen look professional and help cashiers identify products faster
-- Products without photos show a box placeholder icon instead of emoji
+<footer><em>KasiPOS</em> Help Centre — Retail Expert Innovations (Pty) Ltd | Reg. 2026/372349/07</footer>
 
-SCREEN ALWAYS ON:
-- KasiPOS keeps the screen on automatically while the app is open
-- Uses Wake Lock technology on Chrome Android
-- Screen will not dim or lock during a shift
-- Reactivates automatically if you leave and return to the app
-- No settings needed — works automatically
+<script>
+var IMGS = {};
 
-DEVICE COMPATIBILITY:
-- KasiPOS runs in any browser — Chrome, Firefox, Safari
-- Works on Android phone, tablet, or any PC or laptop
-- No app to download — just open kasipos-app.netlify.app in any browser
-- Works on the most affordable Android phones available in South Africa
+var GUIDES = [
+  {id:"sell",label:"🛒 Processing a Sale",banner:{type:"tip",text:"Most used feature — cashiers must know this perfectly."},
+   steps:[
+    {img:null,title:"Open the Sell Screen",desc:"Tap SELL at the bottom navigation bar. You will see the full product grid with categories at the top.",tags:["All products shown by default","Filter by category tabs","Search or scan barcode at top"],tip:"Make sure you are logged in with your staff PIN before starting a sale."},
+    {img:null,title:"Find and Add Products",desc:"Tap any product to add it to the basket. The gold bar at the bottom shows the running total and item count.",tags:["Tap once to add 1 item","Tap again to add more","Gold bar shows running total"],tip:"Use the category tabs to find products faster instead of scrolling."},
+    {img:null,title:"Review the Cart",desc:"The cart slides up showing all items, quantities and the total. Use plus and minus to adjust or Clear to start over.",tags:["Item name and price shown","Plus and minus to change quantity","Clear button removes all items"],tip:"Always double check the total before charging the customer."},
+    {img:null,title:"Select Payment and Charge",desc:"Choose how the customer is paying — Cash, Card, or Debt. For debt link to Existing or New Customer.",tags:["Cash — most common","Card — card machine","Debt — customer owes","Existing or New Customer for debt"],tip:"Tap CHARGE to complete the sale. Stock updates automatically."}
+   ]},
+  {id:"product",label:"📦 Adding Products",banner:{type:"info",text:"Owner access required to add or edit products."},
+   steps:[
+    {img:null,title:"Go to Stock Tab",desc:"Tap STOCK in the bottom navigation bar.",tags:["Bottom nav tap STOCK"],tip:"Only the owner PIN can add or edit products."},
+    {img:null,title:"Check the Catalog First",desc:"Tap the Catalog button to search 140+ pre-loaded South African products with real images. Find your product and tap it to add.",tags:["140+ SA products ready","Real product images included","Search by name or brand"],tip:"Catalog products save you time — images and category are already set up."},
+    {img:null,title:"Set Price, Stock and Supplier",desc:"When adding from catalog or adding manually, fill in the selling price, stock quantity and select a supplier. The system will not save without these three fields.",tags:["Price required","Stock quantity required","Supplier required"],tip:"Add a supplier first if you have not added one yet — tap Add Supplier in the Stock tab."},
+    {img:null,title:"Snap a Product Photo",desc:"When adding manually, tap the camera button at the top of the form. Your phone camera opens — snap the product and it uploads automatically.",tags:["📷 Take Photo button","Rear camera opens","Photo saves with product"],tip:"Catalog products already have photos. Only use the camera for products not in the catalog."},
+    {img:null,title:"Save and Print Label",desc:"Tap Save Product or Add to My Store. After saving, a prompt asks if you want to print a barcode label. Tap Print Label Now, then stick the label on the shelf.",tags:["Barcode auto-generated","Label prints on thermal printer","Stick label on shelf"],tip:"Always print the label immediately after adding — this is how cashiers scan at checkout."}
+   ]},
+  {id:"reports",label:"📊 Sales Reports",banner:{type:"tip",text:"Check reports daily to understand your busiest hours and top products."},
+   steps:[
+    {img:null,title:"Open the Dashboard",desc:"Go to kasipos-dashboard.netlify.app on any phone or tap Cloud Dashboard in the Cash Up tab.",tags:["Any phone any browser","Login with owner credentials"],tip:"Bookmark the dashboard on your phone for quick access."},
+    {img:null,title:"Select a Date Range",desc:"Filter by Today, This Week, This Month or a custom date range.",tags:["Today — daily totals","This Week — 7 days","This Month — monthly view"],tip:"Check today after every shift to catch discrepancies early."},
+    {img:null,title:"Read Your Report",desc:"See total sales, number of transactions, top-selling products and busiest times.",tags:["Total sales amount","Number of transactions","Top products","Busiest time slots"],tip:"Use top products data to make sure popular items are always stocked."}
+   ]},
+  {id:"printer",label:"🖨️ Receipt Printer",banner:{type:"info",text:"You need a 58mm Bluetooth thermal printer — available in the KasiPOS full kit."},
+   steps:[
+    {img:null,title:"Power On the Printer",desc:"Press the power button on the 58mm thermal printer. The blue light confirms it is on.",tags:["Blue light means on","Check paper is loaded"],tip:"Keep the printer plugged in during busy hours so it does not run out of battery."},
+    {img:null,title:"Pair via Bluetooth",desc:"On your tablet go to Settings then Bluetooth. Find the printer usually shown as RPP02 and pair it.",tags:["Tablet Settings then Bluetooth","Look for RPP02 or similar","Tap Pair"],tip:"You only need to pair once. After that it connects automatically."},
+    {img:null,title:"Print After a Sale",desc:"After completing a sale, tap Print Receipt on the confirmation screen.",tags:["Appears after every sale","One tap to print"],tip:"If receipt does not print check Bluetooth is still connected on the tablet."}
+   ]}
+];
 
-SELL TAB - PROCESSING SALES:
-- Mobile-first product grid with category tabs and product images
-- Tap any product to add to basket — tap again to add more
-- Search bar to find products by name, barcode or category
-- Camera button to scan barcodes for fast checkout
-- Products with no price set cannot be added to cart — set the price first in Stock tab
-- Dashboard widgets show Customers Owing total and Top Product for the day
-- Gold bar at bottom shows running total — tap to open cart
-- Cart shows all items with plus and minus buttons and quantity adjustment
-- Clear button removes all items from cart
-- Payment methods: Cash, Card, Scan, Debt
-- Cash: enter amount received and system automatically calculates change
-- Card or Scan: for card machine and mobile payments
-- Debt: links sale to a customer account — customer must be registered and selected — owner PIN required
-- Tap Charge to complete the sale — stock reduces automatically
-- Receipt prints automatically if Bluetooth printer is connected
-- Receipts have Customer Copy and Store Copy
-- Reprint any receipt from Track tab — owner PIN required
-- Checkout shows loyalty points available for redemption if customer is attached
+var OPS = [
+  {id:"newstore",label:"🏪 New Store",banner:{type:"info",text:"Owner setup only — have your store name, area and PIN ready."},
+   steps:[
+    {img:null,title:"Fill in Store Details",desc:"Enter your store name, area, store PIN, owner name and owner PIN at the top of the New Store form.",tags:["Store Name — required","Area — required","Store PIN 4-6 digits — required","Owner Name — required","Owner PIN 4-6 digits — required"],tip:"Write down your Owner PIN — you need it to approve refunds and staff changes."},
+    {img:null,title:"Choose Starter Stock",desc:"Select whether to load a starter product list or start blank. Tick the categories you want.",tags:["Use starter stock pack — recommended","Drinks Snacks Bakery Cleaning available","Start blank for manual products only"],tip:"Using the starter pack saves time — you get a ready product list immediately."},
+    {img:null,title:"Add Your Staff",desc:"Add up to 3 cashiers now. Enter each cashier name and give them a unique PIN.",tags:["Cashier 1 name and PIN","Cashier 2 name and PIN optional","Cashier 3 name and PIN optional"],tip:"Each cashier gets their own PIN so you can track who processed each sale."},
+    {img:null,title:"Tap Create Store",desc:"Once all required fields are filled tap the gold Create Store button. Your store is live immediately.",tags:["Creates store instantly","Takes you to main POS screen"],tip:"Your store is ready! Add more products from Stock or start selling with the starter pack."}
+   ]},
+  {id:"petty",label:"💰 Petty Cash",banner:{type:"warn",text:"Owner PIN required — all petty cash must be authorised before money leaves the till."},
+   steps:[
+    {img:null,title:"Go to Cash Up Tab",desc:"Tap CASH UP at the bottom navigation. The petty cash option is accessible from this screen.",tags:["Bottom nav tap CASH UP"],tip:"Petty cash is for small store expenses like buying supplies or paying for small deliveries."},
+    {img:null,title:"Open Petty Cash Form",desc:"Tap Petty Cash to open the form. Enter the exact amount being taken from the till.",tags:["Amount — exact rand value","Reason — select from dropdown","Note — optional extra detail"],tip:"Always select the correct reason so your cash up report is accurate at end of day."},
+    {img:null,title:"Request Authorisation",desc:"Tap Request Authorization. The owner enters their PIN to approve the withdrawal.",tags:["Owner PIN required to approve","Cannot proceed without approval"],tip:"Without owner approval the petty cash is not recorded and the withdrawal is blocked."},
+    {img:null,title:"Petty Cash Recorded",desc:"Once approved the amount is deducted from the till total and logged automatically with timestamp and reason.",tags:["Appears in Cash-Up History","Timestamp and reason recorded"],tip:"View all petty cash transactions in Cash-Up History at any time."}
+   ]},
+  {id:"cashup",label:"🧾 Cash Up",banner:{type:"tip",text:"Do this at end of every shift — reconciles your cash and card sales for the day."},
+   steps:[
+    {img:null,title:"Open Cash Up Screen",desc:"Tap CASH UP in the bottom navigation. You will see the full cash reconciliation screen.",tags:["Expected Speed Point Total — system calculated","Physical Card Machine Total — you enter this","Variance shown automatically","Total Banked combined"],tip:"The system already knows what you should have. Your job is to count and enter the physical cash."},
+    {img:null,title:"Count and Enter Amounts",desc:"Count all physical cash in the till. Enter the total. If you have a card machine enter that total separately.",tags:["Count all notes and coins","Enter physical cash total","Enter card machine total if applicable"],tip:"If variance shows Short in red — your cash is less than expected. Investigate before saving."},
+    {img:null,title:"Save or Take Action",desc:"Choose your next action from the buttons at the bottom of the screen.",tags:["Save Cash Up — saves the record","Day End — close trading day","Cash-Up History — view previous","Backup Export — download data","Cloud Dashboard Sync — sync now"],tip:"Always sync to cloud after saving so the owner can see it on the dashboard."},
+    {img:null,title:"Cash Up Saved",desc:"The cash up is saved with a timestamp and stored in history. The owner can view it on the remote dashboard.",tags:["Saved with timestamp","Visible on owner dashboard"],tip:"Tap Cloud Dashboard Sync to make the latest cash up visible immediately."}
+   ]},
+  {id:"dayend",label:"🌙 Day End",coming_soon:true}
+];
 
-LOYALTY POINTS SYSTEM:
-- Customers earn 1 point for every R10 spent on Cash and Card payments only
-- Points are NOT earned on Debt sales
-- At checkout, if a customer is attached, available points are displayed
-- Customer can choose how many points to redeem — 1 point equals R1 discount off the total
-- System prevents earning and redeeming points simultaneously on the same sale
-- Points balance visible on customer profile in Customers tab
+var QUIZ = [
+  {q:"How do you add a product to the basket during a sale?",opts:["Go to Settings","Tap the product on the sell screen","Restart the app","Call support"],ans:1,exp:"Just tap the product on the sell screen to add it to the basket!"},
+  {q:"What happens to sales if the internet goes down?",opts:["All sales are lost","KasiPOS stops working","Sales save offline and sync later","You must use paper"],ans:2,exp:"KasiPOS works fully offline. Sales sync automatically when internet returns."},
+  {q:"Where do you see total sales for the day?",opts:["On the receipt","In the Products menu","On the Sales Dashboard","In Settings"],ans:2,exp:"The Dashboard shows daily totals, top products, busiest times and more."},
+  {q:"How do you give a staff member their own login?",opts:["Share your password","Create a staff PIN in Settings","Ask them to download another app","They use your owner PIN"],ans:1,exp:"Go to Settings and create a unique 4-digit PIN for each staff member."},
+  {q:"What does the owner remote dashboard allow?",opts:["Print receipts only","Monitor sales from any phone","Add products only","Reset the app"],ans:1,exp:"The dashboard lets you monitor your store from any phone anywhere."},
+  {q:"What must happen before petty cash can be taken from the till?",opts:["Ask a cashier","Nothing just take it","Get owner PIN authorisation","Write it on paper"],ans:2,exp:"All petty cash requires owner PIN authorisation before it is approved."},
+  {q:"What type of printer does KasiPOS support?",opts:["Laser printer","58mm Bluetooth thermal printer","USB inkjet","Any printer"],ans:1,exp:"KasiPOS supports 58mm Bluetooth thermal printers — small fast and affordable."},
+  {q:"How do you process a debt sale for a customer?",opts:["Not possible","Tap Debt then select or add customer","Send them an invoice","Write it in a book"],ans:1,exp:"Tap Debt on the cart screen then select an existing customer or add a new one."}
+];
 
-MULTI-STORE SYSTEM:
-- KasiPOS supports multiple stores under one system
-- Each store has its own PIN, staff, stock, transactions, customers and data completely separate
-- Add new store from the Store Selection screen — tap Add New Store
-- Each store requires: store name, area, store PIN, owner name and owner PIN
-- Switch between stores from the Store Selection screen
-- Owner dashboard at kasipos-dashboard.netlify.app shows all stores separately
+var TROUBLE = [
+  {icon:"🖨️",title:"Printer Not Printing",desc:"Connected but nothing comes out",steps:["Check printer is on — blue light should be on","Check paper is loaded correctly","Go to tablet Bluetooth settings — confirm printer is connected","Turn printer off and on again","Forget the Bluetooth device and re-pair"]},
+  {icon:"📶",title:"App Not Syncing",desc:"Sales not appearing on dashboard",steps:["Check internet connection on tablet","Toggle WiFi or mobile data off and back on","Open app and wait 30 seconds for auto-sync","Force close and reopen the app","Contact support with your store name if still not syncing"]},
+  {icon:"🔐",title:"Forgot Staff PIN",desc:"Staff member cannot log in",steps:["Log in using your owner PIN","Go to Settings then Staff Management","Find the staff member and tap Edit","Set a new 4-digit PIN","Save — they can log in immediately"]},
+  {icon:"📦",title:"Product Not Showing",desc:"Added product not visible at checkout",steps:["Go to Stock and confirm product was saved","Check product is in the correct category","Make sure product is marked as Active","Search for it by name in the sell screen search bar","Force close and reopen the app to refresh"]},
+  {icon:"📱",title:"App Running Slowly",desc:"KasiPOS is lagging or freezing",steps:["Close other apps running in the background","Restart the tablet","Check storage — delete unused photos or apps","Make sure tablet is not in battery saving mode","Uninstall and reinstall if issue persists"]},
+  {icon:"💳",title:"Wrong Price on Receipt",desc:"Receipt shows incorrect amount",steps:["Go to Stock and find the item","Tap Edit and check the selling price","Correct the price and tap Save","Process a refund for the incorrect sale if needed","Reprocess the sale at the correct price"]}
+];
 
-STAFF AND SECURITY SYSTEM:
-- PIN-based login for every staff member — each cashier has a unique PIN
-- Owner account has special privileges for protected actions
-- Session lock activates automatically after inactivity
-- Owner PIN required for: refunds, exchanges, reprints, debt sales, petty cash, adding or editing products, deleting products, staff changes, Day End, report printing
+var VIDEOS = [
+  {icon:"🛒",title:"How to Process Your First Sale",desc:"Full walkthrough of checkout from products to payment.",dur:"2:34"},
+  {icon:"📦",title:"Setting Up Your Products",desc:"Add products, set prices and organise categories.",dur:"3:12"},
+  {icon:"📊",title:"Reading Your Sales Dashboard",desc:"Understand your reports and how to use data to grow.",dur:"2:58"},
+  {icon:"🖨️",title:"Connecting Your Receipt Printer",desc:"Bluetooth pairing and printing your first receipt.",dur:"2:10"},
+  {icon:"🏪",title:"Setting Up a New Store",desc:"Full new store creation walkthrough with staff and stock.",dur:"3:25"},
+  {icon:"🧾",title:"Doing Your Daily Cash Up",desc:"Count cash, enter totals and save your cash up correctly.",dur:"2:45"}
+];
 
-STOCK TAB - FULL INVENTORY MANAGEMENT:
-- View all products with stock levels, prices, barcodes and supplier links
-- Low stock badge appears on the Stock tab when products fall to or below minimum stock level
-- OUT badge appears on products that are out of stock — cannot be sold
-- Add product: tap Add Product, fill in name, price, stock quantity, minimum stock, category, supplier and cost price — owner PIN required
-- Price and stock quantity are required — cannot save without them
-- Supplier is required — add a supplier first before adding products
-- Edit product: tap three dots then Edit Product — owner PIN required
-- Delete product: inside edit mode — owner PIN required
-- Minimum stock level: when stock reaches this number the low stock badge appears as a warning
-- Cost price: what you paid the supplier — used to calculate profit margin
-- Aging stock tracking: products that have not moved in 30 plus days are flagged
+var FAQS = [
+  {q:"Does KasiPOS work without internet?",a:"Yes! KasiPOS works fully offline. Sales are saved on device and sync to the cloud automatically when internet returns. Nothing is ever lost."},
+  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever. Spaza shop software only: R799. Tavern software only: R1,199. Full kit with tablet, Bluetooth printer and software: R3,999. Contact us on WhatsApp 074 831 5232 to order."},
+  {q:"How do I access my store remotely?",a:"Log into kasipos-dashboard.netlify.app on any phone using your owner credentials. See all sales, reports and stock levels from anywhere."},
+  {q:"Can I have more than one staff member?",a:"Yes. Go to Stock tab, tap the three dots on any product, and manage staff from Settings. Each staff member gets their own PIN."},
+  {q:"How do I handle a debt sale?",a:"On the cart screen tap Debt, then select an existing customer or add a new one. The debt is tracked automatically in the Customers tab."},
+  {q:"What if I make a mistake on a sale?",a:"Go to Track tab, find the transaction and tap Refund. The system reverses the sale and updates stock automatically."},
+  {q:"How do I add a product photo?",a:"When adding a new product tap the camera button at the top of the Add Product form. Your phone camera opens — snap the product and the photo saves automatically. You can also use the pre-loaded catalog which has photos for 140+ South African products already built in."},
+  {q:"What is the pre-loaded catalog?",a:"KasiPOS comes with 140+ common South African products pre-loaded with clean product images — Knorr, Lucky Star, Sunfoil, Albany, Clover and many more. Go to Stock and tap Catalog to search and add them. You must set the selling price, stock quantity and supplier before the product saves."},
+  {q:"Will the screen turn off during a shift?",a:"No. KasiPOS keeps the screen on automatically while the app is open. The screen will not dim or lock during trading."},
+  {q:"How does barcode scanning work?",a:"Tap the camera icon on the sell screen. Your phone camera opens with a gold targeting box. Point it at any barcode and the system detects it automatically — no button needed. If the product is in your store it adds to cart instantly."},
+  {q:"How do I print a barcode label?",a:"After adding any product a prompt appears asking to print the label. Tap Print Label Now. You can also print anytime from Stock tab — tap the three dots next to a product then tap Print Barcode Label. Stick the label on the shelf so cashiers can scan at checkout."},
+  {q:"What if a product has no barcode?",a:"KasiPOS automatically generates a barcode for every product — like KP-BEV-0001. Print the label and stick it on the shelf. Your cashier scans the label just like any real barcode."},
+  {q:"Can I sell a product with no price?",a:"No. Products with no price set cannot be added to the cart. The system will prompt you to set the price first in the Stock tab."}
+];
 
-DEBT BOOK SYSTEM:
-- One of KasiPOS strongest features — built for real township retail
-- Debt sales link a purchase to a registered customer account
-- Customer must be registered with full details to use the debt book
-- Debt limit: maximum amount a customer is allowed to owe
-- Owner PIN required to approve all debt sales
-- Collect debt payment: go to Customers tab, tap Collect, enter amount received, select payment method, tap Save
-- Oldest debts are cleared first automatically when collecting payments
+var botHistory = [];
 
-CASH UP SYSTEM:
-- Done at the end of every shift and every trading day without exception
-- Go to Cash Up tab
-- Screen shows: Sales Today, Money Received, Debt Issued, Refunds
-- Money Received equals cash and card sales plus debt collected minus refunds
-- Save Cash Up locks in the daily reconciliation
+function showSec(name, btn) {
+  var secs = document.querySelectorAll(".sec");
+  for (var i = 0; i < secs.length; i++) secs[i].classList.remove("active");
+  document.getElementById("s-" + name).classList.add("active");
+  var btns = document.querySelectorAll(".nbtn");
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove("active");
+  if (btn) { btn.classList.add("active"); }
+  window.scrollTo(0, 0);
+}
 
-BACKUP AND RESTORE:
-- Go to Cash Up tab and tap Backup or Export
-- Downloads a JSON file of all store data to your device
-- To restore: on the Store Selection screen tap Restore Backup and upload the backup file
-- Cloud sync via Firebase is the primary backup
+document.getElementById("si").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") doSearch();
+});
+document.getElementById("bi").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") sendB();
+});
 
-RECEIPT PRINTER:
-- Supports 58mm Bluetooth thermal printer — available in the KasiPOS full kit
-- Power on printer — blue light means it is on
-- Pair via device Bluetooth settings — usually shows as RPP02
-- Only pair once — auto-connects after first pairing
-- Troubleshoot: check blue light is on, check paper loaded, check Bluetooth connected, turn off and back on, re-pair
+function doSearch() {
+  var v = document.getElementById("si").value.toLowerCase();
+  if (!v) return;
+  if (v.indexOf("sale") > -1 || v.indexOf("sell") > -1 || v.indexOf("checkout") > -1) { showSec("guides", null); return; }
+  if (v.indexOf("product") > -1 || v.indexOf("stock") > -1) { showSec("guides", null); return; }
+  if (v.indexOf("cash") > -1 || v.indexOf("petty") > -1 || v.indexOf("store") > -1) { showSec("ops", null); return; }
+  if (v.indexOf("video") > -1) { showSec("videos", null); return; }
+  if (v.indexOf("quiz") > -1 || v.indexOf("test") > -1) { showSec("quiz", null); return; }
+  if (v.indexOf("fix") > -1 || v.indexOf("problem") > -1 || v.indexOf("printer") > -1) { showSec("fix", null); return; }
+  showSec("bot", null);
+  document.getElementById("bi").value = v;
+  sendB();
+}
 
-ACTIVATION AND LICENSING:
-- New stores require an activation code before selling can begin
-- Activation codes are provided by Retail Expert Innovations with each purchase
-- Contact support on WhatsApp 074 831 5232 to get your activation code
-
-SUPPORT:
-- WhatsApp: 074 831 5232 — Mon to Fri 5pm to 8pm and weekends
-- Help centre: kasipos-help.netlify.app
-- Live app: kasipos-app.netlify.app
-- Owner dashboard: kasipos-dashboard.netlify.app`;
-
-  try {
-    const body = JSON.parse(event.body);
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 800,
-        system: SYSTEM,
-        messages: body.messages
-      })
-    });
-    const data = await response.json();
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify(data)
-    };
-  } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+function buildStep(s, i) {
+  var div = document.createElement("div");
+  var tagsHtml = "";
+  if (s.tags) {
+    for (var t = 0; t < s.tags.length; t++) {
+      tagsHtml += '<div class="vtag">' + s.tags[t] + '</div>';
+    }
   }
-};
+  var tipHtml = s.tip ? '<div class="vtip">&#128161; ' + s.tip + '</div>' : '';
+  div.className = "vstep-noimg";
+  div.innerHTML = '<div class="vstep-num">' + (i+1) + '</div><div class="vstep-title">' + s.title + '</div><div class="vstep-desc">' + s.desc + '</div>' + tagsHtml + tipHtml;
+  return div;
+}
+
+function buildTabSet(data, tabsId, panelsId) {
+  var tabsEl = document.getElementById(tabsId);
+  var panelsEl = document.getElementById(panelsId);
+  for (var i = 0; i < data.length; i++) {
+    (function(g, idx) {
+      var tab = document.createElement("div");
+      tab.className = "gtab" + (idx === 0 ? " active" : "");
+      tab.textContent = g.label;
+      tab.onclick = function() {
+        var ts = tabsEl.querySelectorAll(".gtab");
+        for (var j = 0; j < ts.length; j++) ts[j].classList.remove("active");
+        var ps = panelsEl.querySelectorAll(".gpanel");
+        for (var j = 0; j < ps.length; j++) ps[j].classList.remove("active");
+        tab.classList.add("active");
+        document.getElementById(tabsId + "-" + g.id).classList.add("active");
+      };
+      tabsEl.appendChild(tab);
+
+      var panel = document.createElement("div");
+      panel.className = "gpanel" + (idx === 0 ? " active" : "");
+      panel.id = tabsId + "-" + g.id;
+
+      if (g.coming_soon) {
+        panel.innerHTML = '<div class="cspanel"><div class="csbig">&#127769;</div><h3>DAY END GUIDE</h3><p>This feature is being finalised. Guide will be added once complete.</p><div class="csbadge">COMING SOON</div></div>';
+      } else {
+        if (g.banner) {
+          var bicon = g.banner.type === "warn" ? "&#9888;" : g.banner.type === "info" ? "&#8505;" : "&#128161;";
+          var bd = document.createElement("div");
+          bd.className = "banner " + g.banner.type;
+          bd.innerHTML = bicon + " " + g.banner.text;
+          panel.appendChild(bd);
+        }
+        for (var s = 0; s < g.steps.length; s++) {
+          panel.appendChild(buildStep(g.steps[s], s));
+        }
+      }
+      panelsEl.appendChild(panel);
+    })(data[i], i);
+  }
+}
+
+function buildVideos() {
+  var g = document.getElementById("vg");
+  for (var i = 0; i < VIDEOS.length; i++) {
+    (function(v) {
+      var c = document.createElement("div");
+      c.className = "vcard";
+      c.innerHTML = '<div class="vthumb"><div class="vticon">' + v.icon + '</div><div class="vplay">&#9654;</div><div class="vdur">' + v.dur + '</div></div><div class="vinfo"><div class="vtit">' + v.title + '</div><div class="vdes">' + v.desc + '</div></div>';
+      c.onclick = function() { alert("Video coming soon: " + v.title + "\n\nCheck the Guides section for the same content."); };
+      g.appendChild(c);
+    })(VIDEOS[i]);
+  }
+}
+
+function buildTrouble() {
+  var g = document.getElementById("tg");
+  for (var i = 0; i < TROUBLE.length; i++) {
+    (function(t) {
+      var c = document.createElement("div");
+      c.className = "tc";
+      var sid = "ts" + i + "_" + Date.now();
+      var sh = "";
+      for (var s = 0; s < t.steps.length; s++) {
+        sh += '<div class="tstep"><div class="tsn">' + (s+1) + '</div><div>' + t.steps[s] + '</div></div>';
+      }
+      c.innerHTML = '<div class="ticon">' + t.icon + '</div><div class="ttit">' + t.title + '</div><div class="tdes">' + t.desc + '</div><div class="tsteps" id="' + sid + '">' + sh + '</div>';
+      c.onclick = function() { document.getElementById(sid).classList.toggle("open"); };
+      g.appendChild(c);
+    })(TROUBLE[i]);
+  }
+}
+
+function buildFAQ() {
+  var f = document.getElementById("hfaq");
+  for (var i = 0; i < FAQS.length; i++) {
+    (function(faq, idx) {
+      var d = document.createElement("div");
+      d.className = "fi";
+      var qid = "fq_" + idx;
+      var aid = "fa_" + idx;
+      var qd = document.createElement("div");
+      qd.className = "fq";
+      qd.id = qid;
+      qd.innerHTML = faq.q + ' <span>&#9662;</span>';
+      var ad = document.createElement("div");
+      ad.className = "fa";
+      ad.id = aid;
+      ad.textContent = faq.a;
+      qd.onclick = function() {
+        qd.classList.toggle("open");
+        ad.classList.toggle("open");
+      };
+      d.appendChild(qd);
+      d.appendChild(ad);
+      f.appendChild(d);
+    })(FAQS[i], i);
+  }
+}
+
+var qi = 0, qs = 0;
+function startQuiz() {
+  qi = 0; qs = 0;
+  document.getElementById("qmain").style.display = "block";
+  document.getElementById("qr").classList.remove("show");
+  loadQ();
+}
+function loadQ() {
+  var q = QUIZ[qi];
+  document.getElementById("qn").textContent = "QUESTION " + (qi + 1);
+  document.getElementById("qt").textContent = q.q;
+  document.getElementById("qbar").style.width = ((qi / QUIZ.length) * 100) + "%";
+  document.getElementById("qpt").textContent = "Question " + (qi + 1) + " of " + QUIZ.length;
+  var o = document.getElementById("qo");
+  o.innerHTML = "";
+  for (var i = 0; i < q.opts.length; i++) {
+    (function(opt, idx) {
+      var b = document.createElement("button");
+      b.className = "qopt";
+      b.textContent = opt;
+      b.onclick = function() { selAns(idx, b); };
+      o.appendChild(b);
+    })(q.opts[i], i);
+  }
+  document.getElementById("qf").className = "qfb";
+  document.getElementById("qf").textContent = "";
+  document.getElementById("qnx").className = "qnext";
+}
+function selAns(i, btn) {
+  var q = QUIZ[qi];
+  var opts = document.querySelectorAll(".qopt");
+  for (var j = 0; j < opts.length; j++) opts[j].disabled = true;
+  var fb = document.getElementById("qf");
+  if (i === q.ans) {
+    btn.classList.add("correct"); qs++;
+    fb.className = "qfb show c";
+    fb.textContent = "Correct! " + q.exp;
+  } else {
+    btn.classList.add("wrong");
+    opts[q.ans].classList.add("correct");
+    fb.className = "qfb show w";
+    fb.textContent = "Not quite. " + q.exp;
+  }
+  document.getElementById("qnx").className = "qnext show";
+}
+function nextQ() {
+  qi++;
+  if (qi >= QUIZ.length) {
+    document.getElementById("qmain").style.display = "none";
+    document.getElementById("qr").classList.add("show");
+    var p = Math.round((qs / QUIZ.length) * 100);
+    document.getElementById("qs").textContent = p + "%";
+    document.getElementById("qm").textContent = p >= 80 ? "Excellent! You know KasiPOS inside out." : p >= 60 ? "Good work! Review a few guides and you will be a pro." : "Keep learning! Go through the guides and try again.";
+  } else { loadQ(); }
+}
+
+function addMsg(txt, type) {
+  var el = document.getElementById("bm");
+  var d = document.createElement("div");
+  d.className = "msg " + (type === "bot" ? "b" : "u");
+  var av = document.createElement("div");
+  av.className = "mav";
+  av.textContent = type === "bot" ? "🤖" : "👤";
+  var bub = document.createElement("div");
+  bub.className = "mbub";
+  bub.textContent = txt;
+  d.appendChild(av);
+  d.appendChild(bub);
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+  return d;
+}
+function addTyping() {
+  var el = document.getElementById("bm");
+  var d = document.createElement("div");
+  d.className = "msg b";
+  d.innerHTML = '<div class="mav">&#129302;</div><div class="mbub"><div class="typing"><span></span><span></span><span></span></div></div>';
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+  return d;
+}
+function askB(msg) {
+  document.getElementById("bi").value = msg;
+  sendB();
+}
+function sendB() {
+  var inp = document.getElementById("bi");
+  var msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = "";
+  addMsg(msg, "user");
+  var t = addTyping();
+  botHistory.push({role: "user", content: msg});
+  fetch("/.netlify/functions/chat", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({messages: botHistory})
+  }).then(function(r) {
+    return r.json();
+  }).then(function(data) {
+    t.remove();
+    var reply = (data.content && data.content[0]) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
+    botHistory.push({role: "assistant", content: reply});
+    if (botHistory.length > 20) botHistory = botHistory.slice(-20);
+    addMsg(reply, "bot");
+  }).catch(function() {
+    t.remove();
+    addMsg("Connection issue — please WhatsApp us at 074 831 5232 for immediate help", "bot");
+  });
+}
+
+buildTabSet(GUIDES, "gt", "gp");
+buildTabSet(OPS, "ot", "op");
+buildVideos();
+buildTrouble();
+buildFAQ();
+startQuiz();
+</script>
+</body>
+</html>
