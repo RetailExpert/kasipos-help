@@ -36,16 +36,47 @@ PRODUCT CATALOG:
 - KasiPOS comes with 140+ pre-loaded South African products with real product images
 - Catalog includes: Knorr soups, Lucky Star pilchards, Sunfoil oil, Albany bread, Clover milk, Nivea, Vaseline, OMO, MAQ, KOO, Freshpak, Ricoffy and many more
 - Go to Stock tab and tap Catalog to search and add catalog products to your store
+- When you tap a catalog product you must set the selling price, stock quantity and supplier before it saves
+- No product can be added to your store without a price and stock quantity — the system blocks incomplete products
 - Catalog products already have clean product images — no setup needed
 - For products not in the catalog use the camera feature to snap a photo
+
+BARCODES AND SCANNING:
+- Every product in KasiPOS has a barcode — either a real manufacturer barcode or a KasiPOS auto-generated code
+- Auto-generated codes look like KP-BEV-0001, KP-GRC-0002 etc — unique per product, never duplicated
+- When you add a product (catalog or manual) the system generates a barcode automatically if none exists
+- After adding a product the system prompts you to print a barcode label immediately
+- Print the label and stick it on the shelf so cashiers can scan at checkout
+- Live camera scanner: tap the camera icon on the sell screen — the phone camera opens with a gold targeting box
+- Point the camera at any barcode — the system detects it automatically with no button press needed
+- If the barcode matches a product in your store it adds to cart instantly
+- If not found in your store the system searches online — if found online you set the price and add it
+- If not found anywhere tap Add and Snap Photo to add manually with a photo
+- Physical Bluetooth barcode scanners also work — they type the barcode into the field automatically
+- Live camera scanning requires HTTPS — works on kasipos-app.netlify.app, not on local files
+
+BARCODE LABEL PRINTING:
+- After adding any product a prompt appears asking to print a barcode label
+- Tap Print Label Now to open the label in a new window
+- Tap the Print Label button and select your printer
+- Label shows: store name, product name, price and scannable barcode
+- Label is sized for 58mm thermal printer paper
+- You can also print labels anytime from the Stock tab — tap the three dots next to any product then tap Print Barcode Label
+- Stick labels on shelves so cashiers can scan products at checkout instead of searching manually
+
+STOCK TAB - THREE DOT MENU:
+- Each product in the Stock tab has a plus Stock button and a three dots button
+- Tap three dots to open the product actions menu
+- Actions available: Add Stock, Edit Product, Print Barcode Label
+- This keeps the stock screen clean and simple — one tap for the most common action, menu for everything else
 
 CAMERA FEATURE FOR PRODUCTS:
 - When adding a new product tap the camera button at the top of the Add Product form
 - The rear camera opens automatically — point at the product and take the photo
 - Photo previews immediately and uploads to the cloud automatically
-- If a barcode scan finds no match tap Add and Snap Photo — the barcode is pre-filled and camera opens
 - Works on any Android phone or tablet
 - Real product photos make the sell screen look professional and help cashiers identify products faster
+- Products without photos show a box placeholder icon instead of emoji
 
 SCREEN ALWAYS ON:
 - KasiPOS keeps the screen on automatically while the app is open
@@ -61,10 +92,11 @@ DEVICE COMPATIBILITY:
 - Works on the most affordable Android phones available in South Africa
 
 SELL TAB - PROCESSING SALES:
-- Mobile-first product grid with category tabs and emoji icons
+- Mobile-first product grid with category tabs and product images
 - Tap any product to add to basket — tap again to add more
 - Search bar to find products by name, barcode or category
 - Camera button to scan barcodes for fast checkout
+- Products with no price set cannot be added to cart — set the price first in Stock tab
 - Dashboard widgets show Customers Owing total and Top Product for the day
 - Gold bar at bottom shows running total — tap to open cart
 - Cart shows all items with plus and minus buttons and quantity adjustment
@@ -102,19 +134,20 @@ STAFF AND SECURITY SYSTEM:
 - Owner PIN required for: refunds, exchanges, reprints, debt sales, petty cash, adding or editing products, deleting products, staff changes, Day End, report printing
 
 STOCK TAB - FULL INVENTORY MANAGEMENT:
-- View all products with stock levels, prices, categories, minimum stock levels and supplier links
+- View all products with stock levels, prices, barcodes and supplier links
 - Low stock badge appears on the Stock tab when products fall to or below minimum stock level
 - OUT badge appears on products that are out of stock — cannot be sold
-- Add product: tap Add Product, fill in name, emoji, price, stock quantity, minimum stock, category, barcode, supplier and cost price — owner PIN required
-- Edit product: tap pencil icon — owner PIN required
+- Add product: tap Add Product, fill in name, price, stock quantity, minimum stock, category, supplier and cost price — owner PIN required
+- Price and stock quantity are required — cannot save without them
+- Supplier is required — add a supplier first before adding products
+- Edit product: tap three dots then Edit Product — owner PIN required
 - Delete product: inside edit mode — owner PIN required
 - Minimum stock level: when stock reaches this number the low stock badge appears as a warning
 - Cost price: what you paid the supplier — used to calculate profit margin
-- Barcode: scan at checkout for fast product lookup
 - Aging stock tracking: products that have not moved in 30 plus days are flagged
 
 DEBT BOOK SYSTEM:
-- One of KasiPOS's strongest features — built for real township retail
+- One of KasiPOS strongest features — built for real township retail
 - Debt sales link a purchase to a registered customer account
 - Customer must be registered with full details to use the debt book
 - Debt limit: maximum amount a customer is allowed to owe
