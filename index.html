@@ -308,11 +308,11 @@ var GUIDES = [
     {img:null,title:"Select a Date Range",desc:"Filter by Today, This Week, This Month or a custom date range.",tags:["Today — daily totals","This Week — 7 days","This Month — monthly view"],tip:"Check today after every shift to catch discrepancies early."},
     {img:null,title:"Read Your Report",desc:"See total sales, number of transactions, top-selling products and busiest times.",tags:["Total sales amount","Number of transactions","Top products","Busiest time slots"],tip:"Use top products data to make sure popular items are always stocked."}
    ]},
-  {id:"printer",label:"🖨️ Receipt Printer",banner:{type:"info",text:"You need a 58mm Bluetooth thermal printer — available in the KasiPOS full kit."},
+  {id:"printer",label:"🖨️ Receipt Printer",banner:{type:"info",text:"KasiPOS uses a USB thermal printer — available in the KasiPOS full kit. It connects with a USB cable, not Bluetooth."},
    steps:[
-    {img:null,title:"Power On the Printer",desc:"Press the power button on the 58mm thermal printer. The blue light confirms it is on.",tags:["Blue light means on","Check paper is loaded"],tip:"Keep the printer plugged in during busy hours so it does not run out of battery."},
-    {img:null,title:"Pair via Bluetooth",desc:"On your tablet go to Settings then Bluetooth. Find the printer usually shown as RPP02 and pair it.",tags:["Tablet Settings then Bluetooth","Look for RPP02 or similar","Tap Pair"],tip:"You only need to pair once. After that it connects automatically."},
-    {img:null,title:"Print After a Sale",desc:"After completing a sale, tap Print Receipt on the confirmation screen.",tags:["Appears after every sale","One tap to print"],tip:"If receipt does not print check Bluetooth is still connected on the tablet."}
+    {img:null,title:"Power On the Printer",desc:"Plug the printer into its own wall power adapter and press the power button. The printer needs its own power — the USB cable alone cannot run it.",tags:["Plug into wall power separately","Power light confirms it is on","Check paper is loaded"],tip:"Keep the printer plugged into the wall at all times during trading, not just connected to the tablet."},
+    {img:null,title:"Connect the USB Cable",desc:"Plug the USB cable into the tablet and the printer. In KasiPOS, tap Connect USB Printer and select the printer from the list that appears, then tap Connect.",tags:["USB cable required — not Bluetooth","Tap Connect USB Printer in the app","Select the printer, then tap Connect"],tip:"You only need to reconnect if you refresh the page, close the tab, or restart the tablet — it stays connected through many sales in a row."},
+    {img:null,title:"Print After a Sale",desc:"After completing a sale, the receipt prints automatically — no button needed. It prints a Customer Copy and a Store Copy on the same slip.",tags:["Prints automatically after Charge","Customer Copy and Store Copy on one slip"],tip:"If nothing prints, tap Connect USB Printer again — the connection may have dropped after a refresh."}
    ]}
 ];
 
@@ -320,7 +320,7 @@ var OPS = [
   {id:"newstore",label:"🏪 New Store",banner:{type:"info",text:"Owner setup only — have your store name, area and PIN ready."},
    steps:[
     {img:null,title:"Fill in Store Details",desc:"Enter your store name, area, store PIN, owner name and owner PIN at the top of the New Store form.",tags:["Store Name — required","Area — required","Store PIN 4-6 digits — required","Owner Name — required","Owner PIN 4-6 digits — required"],tip:"Write down your Owner PIN — you need it to approve refunds and staff changes."},
-    {img:null,title:"Choose Starter Stock",desc:"Select whether to load a starter product list or start blank. Tick the categories you want.",tags:["Use starter stock pack — recommended","Drinks Snacks Bakery Cleaning available","Start blank for manual products only"],tip:"Using the starter pack saves time — you get a ready product list immediately."},
+    {img:null,title:"Choose Starter Stock",desc:"Select whether to start blank or load a starter product list. Blank stock is now the default so every new store only shows products you actually add.",tags:["Start with blank stock — default","Use starter stock pack for a quick demo instead","Drinks Snacks Bakery Cleaning available if using starter pack"],tip:"Most real stores should start blank and build their catalog from the real product list — the starter pack is just for demos."},
     {img:null,title:"Add Your Staff",desc:"Add up to 3 cashiers now. Enter each cashier name and give them a unique PIN.",tags:["Cashier 1 name and PIN","Cashier 2 name and PIN optional","Cashier 3 name and PIN optional"],tip:"Each cashier gets their own PIN so you can track who processed each sale."},
     {img:null,title:"Tap Create Store",desc:"Once all required fields are filled tap the gold Create Store button. Your store is live immediately.",tags:["Creates store instantly","Takes you to main POS screen"],tip:"Your store is ready! Add more products from Stock or start selling with the starter pack."}
    ]},
@@ -348,12 +348,12 @@ var QUIZ = [
   {q:"How do you give a staff member their own login?",opts:["Share your password","Create a staff PIN in Settings","Ask them to download another app","They use your owner PIN"],ans:1,exp:"Go to Settings and create a unique 4-digit PIN for each staff member."},
   {q:"What does the owner remote dashboard allow?",opts:["Print receipts only","Monitor sales from any phone","Add products only","Reset the app"],ans:1,exp:"The dashboard lets you monitor your store from any phone anywhere."},
   {q:"What must happen before petty cash can be taken from the till?",opts:["Ask a cashier","Nothing just take it","Get owner PIN authorisation","Write it on paper"],ans:2,exp:"All petty cash requires owner PIN authorisation before it is approved."},
-  {q:"What type of printer does KasiPOS support?",opts:["Laser printer","58mm Bluetooth thermal printer","USB inkjet","Any printer"],ans:1,exp:"KasiPOS supports 58mm Bluetooth thermal printers — small fast and affordable."},
+  {q:"What type of printer does KasiPOS support?",opts:["Laser printer","USB thermal printer","Bluetooth inkjet","Any printer"],ans:1,exp:"KasiPOS supports USB thermal printers — connect with a cable, small fast and affordable."},
   {q:"How do you process a debt sale for a customer?",opts:["Not possible","Tap Debt then select or add customer","Send them an invoice","Write it in a book"],ans:1,exp:"Tap Debt on the cart screen then select an existing customer or add a new one."}
 ];
 
 var TROUBLE = [
-  {icon:"🖨️",title:"Printer Not Printing",desc:"Connected but nothing comes out",steps:["Check printer is on — blue light should be on","Check paper is loaded correctly","Go to tablet Bluetooth settings — confirm printer is connected","Turn printer off and on again","Forget the Bluetooth device and re-pair"]},
+  {icon:"🖨️",title:"Printer Not Printing",desc:"Connected but nothing comes out",steps:["Check the printer is plugged into wall power, not just the USB cable","Check paper is loaded correctly","In KasiPOS tap Connect USB Printer again — the connection drops after a page refresh","Make sure you are using Chrome — other browsers do not support USB printing","Unplug and replug the USB cable, then reconnect in the app"]},
   {icon:"📶",title:"App Not Syncing",desc:"Sales not appearing on dashboard",steps:["Check internet connection on tablet","Toggle WiFi or mobile data off and back on","Open app and wait 30 seconds for auto-sync","Force close and reopen the app","Contact support with your store name if still not syncing"]},
   {icon:"🔐",title:"Forgot Staff PIN",desc:"Staff member cannot log in",steps:["Log in using your owner PIN","Go to Settings then Staff Management","Find the staff member and tap Edit","Set a new 4-digit PIN","Save — they can log in immediately"]},
   {icon:"📦",title:"Product Not Showing",desc:"Added product not visible at checkout",steps:["Go to Stock and confirm product was saved","Check product is in the correct category","Make sure product is marked as Active","Search for it by name in the sell screen search bar","Force close and reopen the app to refresh"]},
@@ -365,25 +365,26 @@ var VIDEOS = [
   {icon:"🛒",title:"How to Process Your First Sale",desc:"Full walkthrough of checkout from products to payment.",dur:"2:34"},
   {icon:"📦",title:"Setting Up Your Products",desc:"Add products, set prices and organise categories.",dur:"3:12"},
   {icon:"📊",title:"Reading Your Sales Dashboard",desc:"Understand your reports and how to use data to grow.",dur:"2:58"},
-  {icon:"🖨️",title:"Connecting Your Receipt Printer",desc:"Bluetooth pairing and printing your first receipt.",dur:"2:10"},
+  {icon:"🖨️",title:"Connecting Your Receipt Printer",desc:"USB cable setup and printing your first receipt.",dur:"2:10"},
   {icon:"🏪",title:"Setting Up a New Store",desc:"Full new store creation walkthrough with staff and stock.",dur:"3:25"},
   {icon:"🧾",title:"Doing Your Daily Cash Up",desc:"Count cash, enter totals and save your cash up correctly.",dur:"2:45"}
 ];
 
 var FAQS = [
   {q:"Does KasiPOS work without internet?",a:"Yes! KasiPOS works fully offline. Sales are saved on device and sync to the cloud automatically when internet returns. Nothing is ever lost."},
-  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever. Spaza shop software only: R799. Tavern software only: R1,199. Full kit with tablet, Bluetooth printer and software: R3,999. Contact us on WhatsApp 074 831 5232 to order."},
+  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever. Spaza shop software only: R799. Tavern software only: R1,199. Full kit with tablet, USB thermal printer and software: R3,999. Contact us on WhatsApp 074 831 5232 to order."},
   {q:"How do I access my store remotely?",a:"Log into kasipos-dashboard.netlify.app on any phone using your owner credentials. See all sales, reports and stock levels from anywhere."},
   {q:"Can I have more than one staff member?",a:"Yes. Go to Stock tab, tap the three dots on any product, and manage staff from Settings. Each staff member gets their own PIN."},
   {q:"How do I handle a debt sale?",a:"On the cart screen tap Debt, then select an existing customer or add a new one. The debt is tracked automatically in the Customers tab."},
   {q:"What if I make a mistake on a sale?",a:"Go to Track tab, find the transaction and tap Refund. The system reverses the sale and updates stock automatically."},
   {q:"How do I add a product photo?",a:"When adding a new product tap the camera button at the top of the Add Product form. Your phone camera opens — snap the product and the photo saves automatically. You can also use the pre-loaded catalog which has photos for 140+ South African products already built in."},
-  {q:"What is the pre-loaded catalog?",a:"KasiPOS comes with 140+ common South African products pre-loaded with clean product images — Knorr, Lucky Star, Sunfoil, Albany, Clover and many more. Go to Stock and tap Catalog to search and add them. You must set the selling price, stock quantity and supplier before the product saves."},
+  {q:"What is the pre-loaded catalog?",a:"KasiPOS comes with 140+ common South African products pre-loaded with clean product images — Knorr, Lucky Star, Sunfoil, Albany, Clover and many more. Go to Stock and tap Catalog to search and add them. You must set the selling price, stock quantity and supplier before the product saves. Tavern-type stores also get an extra alcohol and tavern catalog with 188 more products."},
   {q:"Will the screen turn off during a shift?",a:"No. KasiPOS keeps the screen on automatically while the app is open. The screen will not dim or lock during trading."},
   {q:"How does barcode scanning work?",a:"Tap the camera icon on the sell screen. Your phone camera opens with a gold targeting box. Point it at any barcode and the system detects it automatically — no button needed. If the product is in your store it adds to cart instantly."},
   {q:"How do I print a barcode label?",a:"After adding any product a prompt appears asking to print the label. Tap Print Label Now. You can also print anytime from Stock tab — tap the three dots next to a product then tap Print Barcode Label. Stick the label on the shelf so cashiers can scan at checkout."},
   {q:"What if a product has no barcode?",a:"KasiPOS automatically generates a barcode for every product — like KP-BEV-0001. Print the label and stick it on the shelf. Your cashier scans the label just like any real barcode."},
-  {q:"Can I sell a product with no price?",a:"No. Products with no price set cannot be added to the cart. The system will prompt you to set the price first in the Stock tab."}
+  {q:"Can I sell a product with no price?",a:"No. Products with no price set cannot be added to the cart. The system will prompt you to set the price first in the Stock tab."},
+  {q:"How does the USB receipt printer connect?",a:"With a USB cable, not Bluetooth. Plug the printer into wall power and the USB cable into your tablet, then tap Connect USB Printer in the app and select it from the list. It stays connected through many sales until you refresh the page."}
 ];
 
 var botHistory = [];
@@ -597,7 +598,7 @@ function addMsg(txt, type) {
   av.textContent = type === "bot" ? "🤖" : "👤";
   var bub = document.createElement("div");
   bub.className = "mbub";
-  bub.innerHTML = txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  bub.textContent = txt;
   d.appendChild(av);
   d.appendChild(bub);
   el.appendChild(d);
