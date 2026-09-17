@@ -93,10 +93,15 @@ h2 em{color:var(--gold);font-style:normal;}
 .bwrap{max-width:520px;}
 .bbox{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .bhead{padding:12px 14px;background:#111;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.bcodebtn{background:transparent;border:1px solid var(--border);border-radius:14px;padding:4px 10px;font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;white-space:nowrap;}
+.bcodebox{display:none;padding:8px 12px;border-bottom:1px solid var(--border);background:#111;gap:6px;}
+.bcodebox.show{display:flex;}
+.bcodeinp{flex:1;padding:8px 10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:6px;color:#fff;font-size:12px;outline:none;}
+.bcodesave{padding:0 14px;background:var(--gold);border:none;border-radius:6px;font-weight:700;font-size:12px;color:#000;cursor:pointer;}
 .bav{width:30px;height:30px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;}
 .bname{font-weight:700;font-size:12px;color:#fff;}
 .bstat{font-size:10px;color:var(--green);}
-.bmsgs{height:300px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.bmsgs{height:60vh;max-height:520px;min-height:340px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
 .msg{display:flex;gap:6px;max-width:85%;}
 .msg.u{align-self:flex-end;flex-direction:row-reverse;}
 .mav{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:2px;}
@@ -113,10 +118,18 @@ h2 em{color:var(--gold);font-style:normal;}
 .bsugg{padding:8px 12px;display:flex;flex-wrap:wrap;gap:5px;border-top:1px solid var(--border);background:#111;}
 .sg{padding:4px 9px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:14px;font-size:10px;font-weight:600;color:var(--gold);cursor:pointer;}
 .sg:hover{background:var(--gold);color:#000;}
-.binpr{display:flex;border-top:1px solid var(--border);}
+.binpr{display:flex;border-top:1px solid var(--border);align-items:center;}
 .binp{flex:1;padding:11px 13px;background:transparent;border:none;outline:none;color:#fff;font-size:12px;}
 .binp::placeholder{color:var(--dim);}
+.battach{padding:0 12px;background:transparent;border:none;cursor:pointer;font-size:16px;color:var(--dim);}
+.battach:hover{color:var(--gold);}
 .bsend{padding:0 14px;background:var(--gold);border:none;cursor:pointer;font-size:14px;color:#000;}
+.bpreview{display:none;padding:8px 12px;border-top:1px solid var(--border);align-items:center;gap:8px;background:#111;}
+.bpreview.show{display:flex;}
+.bpreview img{width:40px;height:40px;object-fit:cover;border-radius:5px;border:1px solid var(--border);}
+.bpreview span{font-size:11px;color:var(--dim);flex:1;}
+.bpreview button{background:transparent;border:none;color:var(--red);font-size:14px;cursor:pointer;padding:4px 8px;}
+.mbub img{max-width:160px;border-radius:7px;display:block;margin-top:4px;}
 .tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;}
 .tc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;cursor:pointer;}
 .tc:hover{border-color:var(--gold);}
@@ -234,7 +247,12 @@ footer em{color:var(--gold);font-style:normal;}
     <div class="bbox">
       <div class="bhead">
         <div class="bav">&#129302;</div>
-        <div><div class="bname">KasiBot</div><div class="bstat">Powered by Claude AI</div></div>
+        <div style="flex:1"><div class="bname">KasiBot</div><div class="bstat">Powered by Claude AI</div></div>
+        <button class="bcodebtn" onclick="toggleCodeBox()">&#128273; Code</button>
+      </div>
+      <div class="bcodebox" id="bcodebox">
+        <input class="bcodeinp" id="bcodeinp" placeholder="Enter your AI access code">
+        <button class="bcodesave" onclick="saveCode()">Save</button>
       </div>
       <div class="bmsgs" id="bm">
         <div class="msg b"><div class="mav">&#129302;</div><div class="mbub">Sawubona! I am KasiBot. Ask me anything about KasiPOS — in English, Zulu, Xhosa, or a mix!</div></div>
@@ -246,8 +264,15 @@ footer em{color:var(--gold);font-style:normal;}
         <span class="sg" onclick="askB('How do I do a cash up?')">Cash up</span>
         <span class="sg" onclick="askB('How do I record petty cash?')">Petty cash</span>
       </div>
+      <div class="bpreview" id="bprev">
+        <img id="bprevimg" src="">
+        <span>Photo attached</span>
+        <button onclick="clearImage()">&#10005;</button>
+      </div>
       <div class="binpr">
-        <input class="binp" id="bi" placeholder="Type your question...">
+        <input type="file" id="bfile" accept="image/*" style="display:none">
+        <button class="battach" onclick="document.getElementById('bfile').click()" title="Attach photo or screenshot">&#128247;</button>
+        <input class="binp" id="bi" placeholder="Type your question or attach a photo...">
         <button class="bsend" onclick="sendB()">&#10148;</button>
       </div>
     </div>
@@ -261,20 +286,20 @@ footer em{color:var(--gold);font-style:normal;}
 </div>
 
 <div id="s-contact" class="sec">
-  <h2>CONTACT <em>SUPPORT</em></h2>
-  <p class="sub">Cannot find your answer? Reach out directly</p>
+  <h2>SUPPORT <em>&amp; TOOLS</em></h2>
+  <p class="sub">Talk to a real person, or manage your store remotely</p>
   <div class="cboxes">
     <div class="cbox">
       <div class="cicon">&#128172;</div>
       <h3>WHATSAPP SUPPORT</h3>
-      <p>Chat with us directly for technical help and onboarding.</p>
+      <p>Talk to a real person directly for technical help and onboarding.</p>
       <a href="https://wa.me/27748315232" target="_blank" class="cbtn">WHATSAPP NOW</a>
       <div class="chrs">Mon-Fri 5pm-8pm | Weekends</div>
     </div>
     <div class="cbox">
       <div class="cicon">&#127760;</div>
       <h3>OWNER DASHBOARD</h3>
-      <p>Monitor your store remotely from any phone anytime.</p>
+      <p>Monitor your store remotely from any phone anytime. This is a store management tool, not a support channel.</p>
       <a href="https://kasipos-dashboard.netlify.app" target="_blank" class="cbtn">OPEN DASHBOARD</a>
       <div class="chrs">Requires owner login</div>
     </div>
@@ -407,14 +432,19 @@ document.getElementById("bi").addEventListener("keydown", function(e) {
 });
 
 function doSearch() {
-  var v = document.getElementById("si").value.toLowerCase();
+  var v = document.getElementById("si").value.trim();
   if (!v) return;
-  if (v.indexOf("sale") > -1 || v.indexOf("sell") > -1 || v.indexOf("checkout") > -1) { showSec("guides", null); return; }
-  if (v.indexOf("product") > -1 || v.indexOf("stock") > -1) { showSec("guides", null); return; }
-  if (v.indexOf("cash") > -1 || v.indexOf("petty") > -1 || v.indexOf("store") > -1) { showSec("ops", null); return; }
-  if (v.indexOf("video") > -1) { showSec("videos", null); return; }
-  if (v.indexOf("quiz") > -1 || v.indexOf("test") > -1) { showSec("quiz", null); return; }
-  if (v.indexOf("fix") > -1 || v.indexOf("problem") > -1 || v.indexOf("printer") > -1) { showSec("fix", null); return; }
+  var low = v.toLowerCase();
+  // Only jump to a tab when the person is clearly asking for that tab itself,
+  // not for any question that happens to contain a related word — otherwise
+  // real questions ("how do I add a product") get dumped on a whole guide
+  // page instead of actually being answered.
+  if (/^(video|videos)$/.test(low)) { showSec("videos", null); return; }
+  if (/^(quiz|test)$/.test(low)) { showSec("quiz", null); return; }
+  if (/^(guide|guides)$/.test(low)) { showSec("guides", null); return; }
+  if (/^(operations?|ops)$/.test(low)) { showSec("ops", null); return; }
+  // Anything else is a real question — send it straight to KasiBot, which
+  // can actually search, reason, and answer instead of guessing a tab.
   showSec("bot", null);
   document.getElementById("bi").value = v;
   sendB();
@@ -589,7 +619,7 @@ function nextQ() {
   } else { loadQ(); }
 }
 
-function addMsg(txt, type) {
+function addMsg(txt, type, imgSrc) {
   var el = document.getElementById("bm");
   var d = document.createElement("div");
   d.className = "msg " + (type === "bot" ? "b" : "u");
@@ -599,6 +629,11 @@ function addMsg(txt, type) {
   var bub = document.createElement("div");
   bub.className = "mbub";
   bub.textContent = txt;
+  if (imgSrc) {
+    var im = document.createElement("img");
+    im.src = imgSrc;
+    bub.appendChild(im);
+  }
   d.appendChild(av);
   d.appendChild(bub);
   el.appendChild(d);
@@ -618,24 +653,97 @@ function askB(msg) {
   document.getElementById("bi").value = msg;
   sendB();
 }
+
+var pendingImage = null; // {mediaType, data, previewUrl}
+
+document.getElementById("bfile").addEventListener("change", function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var maxDim = 1024;
+      var w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+      pendingImage = { mediaType: "image/jpeg", data: dataUrl.split(",")[1], previewUrl: dataUrl };
+      document.getElementById("bprevimg").src = dataUrl;
+      document.getElementById("bprev").classList.add("show");
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = "";
+});
+
+function clearImage() {
+  pendingImage = null;
+  document.getElementById("bprev").classList.remove("show");
+  document.getElementById("bprevimg").src = "";
+}
+
+function toggleCodeBox() {
+  var box = document.getElementById("bcodebox");
+  box.classList.toggle("show");
+  if (box.classList.contains("show")) {
+    document.getElementById("bcodeinp").value = localStorage.getItem("kasibot_code") || "";
+  }
+}
+function saveCode() {
+  var v = document.getElementById("bcodeinp").value.trim();
+  if (v) { localStorage.setItem("kasibot_code", v); }
+  else { localStorage.removeItem("kasibot_code"); }
+  document.getElementById("bcodebox").classList.remove("show");
+  addMsg("Code saved. Ask me anything!", "bot");
+}
+
 function sendB() {
   var inp = document.getElementById("bi");
   var msg = inp.value.trim();
-  if (!msg) return;
+  if (!msg && !pendingImage) return;
   inp.value = "";
-  addMsg(msg, "user");
+  var displayText = msg || (pendingImage ? "What is this?" : "");
+  addMsg(displayText, "user", pendingImage ? pendingImage.previewUrl : null);
   var t = addTyping();
-  botHistory.push({role: "user", content: msg});
+
+  var userContent;
+  if (pendingImage) {
+    userContent = [
+      { type: "text", text: displayText },
+      { type: "image", source: { type: "base64", media_type: pendingImage.mediaType, data: pendingImage.data } }
+    ];
+  } else {
+    userContent = msg;
+  }
+  botHistory.push({role: "user", content: userContent});
+  clearImage();
+
+  var accessCode = localStorage.getItem("kasibot_code") || "";
+
   fetch("/.netlify/functions/chat", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({messages: botHistory})
+    body: JSON.stringify({messages: botHistory, accessCode: accessCode})
   }).then(function(r) {
     return r.json();
   }).then(function(data) {
     t.remove();
     var reply = (data.content && data.content[0]) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
-    botHistory.push({role: "assistant", content: reply});
+    if (data.accessDenied) {
+      // Don't keep a rejected turn in history — otherwise it pollutes every
+      // future request with an assistant message that never actually
+      // answered anything.
+      botHistory.pop();
+    } else {
+      botHistory.push({role: "assistant", content: reply});
+    }
     if (botHistory.length > 20) botHistory = botHistory.slice(-20);
     addMsg(reply, "bot");
   }).catch(function() {
