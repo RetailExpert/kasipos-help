@@ -156,7 +156,7 @@ SUPPORT: WhatsApp 074 831 5232, Mon-Fri 5-8pm and weekends. Help centre kasipos-
       })
     });
 
-    const data = await response.json();
+    let data = await response.json();
 
     // This is the fix: previously any error from Anthropic (bad key, rate
     // limit, invalid request) was forwarded to the frontend as if it were a
@@ -190,12 +190,31 @@ SUPPORT: WhatsApp 074 831 5232, Mon-Fri 5-8pm and weekends. Help centre kasipos-
       });
     }
 
-    // Confirm exactly what's being sent back on every genuine completion,
-    // not just failures -- up to now a "successful" call (no error logged)
-    // was a black box with no way to see whether the response shape was
-    // actually what the frontend expects.
-    const hasUsableText = !!(data && data.content && data.content[0] && data.content[0].text);
-    console.log('KasiBot: completed, hasUsableText=' + hasUsableText + ', stop_reason=' + (data && data.stop_reason) + ', textPreview=' + JSON.stringify((data && data.content && data.content[0] && data.content[0].text || '').slice(0, 80)));
+    // The frontend reads data.content[0].text specifically -- it assumes
+    // the first block is always the usable text. That assumption was wrong:
+    // real completions were coming back with stop_reason=end_turn (a clean,
+    // normal finish, not an error or truncation) but no usable text at
+    // position 0. Find the actual text block wherever it is instead of
+    // assuming its position, and move it to the front so the frontend's
+    // existing check works without needing to change the frontend at all.
+    const textBlock = (data && Array.isArray(data.content))
+      ? data.content.find(b => b && b.type === 'text' && b.text && b.text.trim().length > 0)
+      : null;
+
+    console.log('KasiBot: completed, stop_reason=' + (data && data.stop_reason) + ', blockTypes=' + JSON.stringify((data && data.content || []).map(b => b && b.type)) + ', foundText=' + !!textBlock + ', textPreview=' + JSON.stringify((textBlock ? textBlock.text : '').slice(0, 80)));
+
+    if (textBlock && data.content[0] !== textBlock) {
+      data.content = [textBlock, ...data.content.filter(b => b !== textBlock)];
+    }
+
+    if (!textBlock) {
+      // Claude responded, cleanly, with genuinely no usable text anywhere
+      // in the response -- a real edge case, not a shape mismatch. Log it
+      // distinctly so it's obvious if this ever happens again, and still
+      // hand the frontend something usable instead of an empty block.
+      console.error('KasiBot: Claude completed with no usable text block anywhere in the response');
+      data = { content: [{ type: 'text', text: 'Sorry, I had trouble putting together an answer there. Please try asking again, or WhatsApp us at 074 831 5232.' }] };
+    }
 
     return {
       statusCode: 200,
