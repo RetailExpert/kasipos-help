@@ -4,7 +4,13 @@ exports.handler = async function(event) {
   const KEY = process.env.ANTHROPIC_API_KEY;
   if (!KEY) {
     console.error('KasiBot: ANTHROPIC_API_KEY is not set in Netlify environment variables');
-    return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured' }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        content: [{ type: 'text', text: 'Sorry, something went wrong on our end. Please WhatsApp us at 074 831 5232 for immediate help.' }]
+      })
+    };
   }
 
   // AI ACCESS EMAIL GATING
@@ -290,7 +296,13 @@ SUPPORT:
     body = JSON.parse(event.body);
   } catch (err) {
     console.error('KasiBot: failed to parse request body', err.message);
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body' }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        content: [{ type: 'text', text: 'Sorry, something went wrong on our end. Please WhatsApp us at 074 831 5232 for immediate help.' }]
+      })
+    };
   }
 
   try {
@@ -349,7 +361,19 @@ SUPPORT:
       body: JSON.stringify(data)
     };
   } catch (err) {
+    // This used to return a bare {error: ...} with no .content field, which
+    // the frontend has no way to read a message out of -- it would silently
+    // fall back to its own generic "Sorry, connection issue" text instead,
+    // hiding whatever actually happened. Now this logs the real error here
+    // AND still gives the frontend a usable, correctly-shaped response,
+    // same as every other path in this function.
     console.error('KasiBot: request to Anthropic failed entirely', err.message);
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({
+        content: [{ type: 'text', text: 'Sorry, something went wrong on our end. Please WhatsApp us at 074 831 5232 for immediate help.' }]
+      })
+    };
   }
 };
