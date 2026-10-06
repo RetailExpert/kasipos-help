@@ -190,6 +190,13 @@ SUPPORT: WhatsApp 074 831 5232, Mon-Fri 5-8pm and weekends. Help centre kasipos-
       });
     }
 
+    // Confirm exactly what's being sent back on every genuine completion,
+    // not just failures -- up to now a "successful" call (no error logged)
+    // was a black box with no way to see whether the response shape was
+    // actually what the frontend expects.
+    const hasUsableText = !!(data && data.content && data.content[0] && data.content[0].text);
+    console.log('KasiBot: completed, hasUsableText=' + hasUsableText + ', stop_reason=' + (data && data.stop_reason) + ', textPreview=' + JSON.stringify((data && data.content && data.content[0] && data.content[0].text || '').slice(0, 80)));
+
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
