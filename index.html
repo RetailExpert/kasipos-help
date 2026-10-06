@@ -90,6 +90,13 @@ h2 em{color:var(--gold);font-style:normal;}
 .qrlbl{font-size:12px;color:var(--dim);margin-bottom:10px;}
 .qrmsg{font-size:14px;color:#fff;font-weight:700;margin-bottom:16px;}
 .qrestart{padding:8px 24px;background:var(--gold);border:none;border-radius:5px;font-weight:700;font-size:13px;color:#000;cursor:pointer;}
+.qrev-hdr{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.qrev-item{background:rgba(231,76,60,0.06);border:1px solid rgba(231,76,60,0.2);border-radius:8px;padding:10px 12px;margin-bottom:8px;}
+.qrev-q{font-size:12px;font-weight:700;color:#fff;margin-bottom:6px;}
+.qrev-you{font-size:11px;color:var(--red);margin-bottom:3px;}
+.qrev-correct{font-size:11px;color:var(--green);margin-bottom:4px;}
+.qrev-exp{font-size:11px;color:var(--text);line-height:1.4;}
+.qrev-perfect{background:rgba(46,204,113,0.08);border:1px solid rgba(46,204,113,0.25);border-radius:8px;padding:12px;text-align:center;font-size:12px;color:var(--green);font-weight:700;}
 .bwrap{max-width:520px;}
 .bbox{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .bhead{padding:12px 14px;background:#111;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
@@ -235,6 +242,7 @@ footer em{color:var(--gold);font-style:normal;}
       <div class="qscore" id="qs"></div>
       <div class="qrlbl">YOUR SCORE</div>
       <div class="qrmsg" id="qm"></div>
+      <div id="qreview" style="text-align:left;margin-top:16px"></div>
       <button class="qrestart" onclick="startQuiz()">TRY AGAIN</button>
     </div>
   </div>
@@ -248,10 +256,10 @@ footer em{color:var(--gold);font-style:normal;}
       <div class="bhead">
         <div class="bav">&#129302;</div>
         <div style="flex:1"><div class="bname">KasiBot</div><div class="bstat">Powered by Claude AI</div></div>
-        <button class="bcodebtn" onclick="toggleCodeBox()">&#128273; Code</button>
+        <button class="bcodebtn" onclick="toggleCodeBox()">&#128231; Email</button>
       </div>
       <div class="bcodebox" id="bcodebox">
-        <input class="bcodeinp" id="bcodeinp" placeholder="Enter your AI access code">
+        <input class="bcodeinp" id="bcodeinp" type="email" placeholder="Enter your approved email">
         <button class="bcodesave" onclick="saveCode()">Save</button>
       </div>
       <div class="bmsgs" id="bm">
@@ -317,7 +325,7 @@ var GUIDES = [
     {img:null,title:"Open the Sell Screen",desc:"Tap SELL at the bottom navigation bar. You will see the full product grid with categories at the top.",tags:["All products shown by default","Filter by category tabs","Search or scan barcode at top"],tip:"Make sure you are logged in with your staff PIN before starting a sale."},
     {img:null,title:"Find and Add Products",desc:"Tap any product to add it to the basket. The gold bar at the bottom shows the running total and item count.",tags:["Tap once to add 1 item","Tap again to add more","Gold bar shows running total"],tip:"Use the category tabs to find products faster instead of scrolling."},
     {img:null,title:"Review the Cart",desc:"The cart slides up showing all items, quantities and the total. Use plus and minus to adjust or Clear to start over.",tags:["Item name and price shown","Plus and minus to change quantity","Clear button removes all items"],tip:"Always double check the total before charging the customer."},
-    {img:null,title:"Select Payment and Charge",desc:"Choose how the customer is paying — Cash, Card, or Debt. For debt link to Existing or New Customer.",tags:["Cash — most common","Card — card machine","Debt — customer owes","Existing or New Customer for debt"],tip:"Tap CHARGE to complete the sale. Stock updates automatically."}
+    {img:null,title:"Select Payment and Charge",desc:"Choose how the customer is paying — Cash, Card, Scan, or Debt. For debt link to Existing or New Customer. If they're paying with more than one method, tap Split Payment instead.",tags:["Cash — most common","Card — card machine","Scan — QR or scan-to-pay","Debt — customer owes, Existing or New Customer","Split Payment — mix two or more methods on one sale"],tip:"Tap CHARGE to complete the sale. Stock updates automatically."}
    ]},
   {id:"product",label:"📦 Adding Products",banner:{type:"info",text:"Owner access required to add or edit products."},
    steps:[
@@ -327,11 +335,19 @@ var GUIDES = [
     {img:null,title:"Snap a Product Photo",desc:"When adding manually, tap the camera button at the top of the form. Your phone camera opens — snap the product and it uploads automatically.",tags:["📷 Take Photo button","Rear camera opens","Photo saves with product"],tip:"Catalog products already have photos. Only use the camera for products not in the catalog."},
     {img:null,title:"Save and Print Label",desc:"Tap Save Product or Add to My Store. After saving, a prompt asks if you want to print a barcode label. Tap Print Label Now, then stick the label on the shelf.",tags:["Barcode auto-generated","Label prints on thermal printer","Stick label on shelf"],tip:"Always print the label immediately after adding — this is how cashiers scan at checkout."}
    ]},
-  {id:"reports",label:"📊 Sales Reports",banner:{type:"tip",text:"Check reports daily to understand your busiest hours and top products."},
+  {id:"reports",label:"📊 Sales Reports",banner:{type:"tip",text:"This is the in-app report — for remote monitoring from your phone, see the Owner Dashboard guide instead."},
    steps:[
-    {img:null,title:"Open the Dashboard",desc:"Go to kasipos-dashboard.netlify.app on any phone or tap Cloud Dashboard in the Cash Up tab.",tags:["Any phone any browser","Login with owner credentials"],tip:"Bookmark the dashboard on your phone for quick access."},
-    {img:null,title:"Select a Date Range",desc:"Filter by Today, This Week, This Month or a custom date range.",tags:["Today — daily totals","This Week — 7 days","This Month — monthly view"],tip:"Check today after every shift to catch discrepancies early."},
-    {img:null,title:"Read Your Report",desc:"See total sales, number of transactions, top-selling products and busiest times.",tags:["Total sales amount","Number of transactions","Top products","Busiest time slots"],tip:"Use top products data to make sure popular items are always stocked."}
+    {img:null,title:"Open the Sales Report",desc:"Go to Track tab, pick a report period, then tap Sales Report.",tags:["Track tab → Sales Report","Report periods — Today, This Week, MTD, YTD, or a custom From and To date"],tip:"MTD means Month to Date, YTD means Year to Date — both run from the start of that period through today."},
+    {img:null,title:"Read Your Numbers",desc:"See net sales, the cash and card split, debt issued versus collected, and refunds for the period you picked.",tags:["Net sales","Cash and Card breakdown","Debt issued and collected","Refunds"],tip:"Check this against your Cash Up to make sure the two agree."},
+    {img:null,title:"See Gross Profit",desc:"The report shows Gross Profit alongside revenue, using each product's cost price, plus a per-product profit breakdown in Top Products.",tags:["Gross Profit and margin percent shown","Per-product profit in the Top Products table"],tip:"This needs real cost prices set on your products to mean anything — revenue isn't profit."}
+   ]},
+  {id:"dashboard",label:"🌐 Owner Dashboard",banner:{type:"info",text:"A separate site for checking your stores remotely — not the same screen as the in-app Sales Report."},
+   steps:[
+    {img:null,title:"Open the Dashboard",desc:"Go to kasipos-dashboard.netlify.app on any phone, or tap Cloud Dashboard in the Cash Up tab, and sign in with your owner account.",tags:["kasipos-dashboard.netlify.app","Any phone, any browser","Owner account login"],tip:"Bookmark it on your phone — this is how you check in on your store without being there."},
+    {img:null,title:"See Today's Numbers Across All Stores",desc:"Total Stores, Sales Today, Transactions, and Debt Owed are shown combined across every store on your account.",tags:["Total Stores","Sales Today","Transactions today","Debt Owed"],tip:"If you run more than one store, these numbers are the combined total, not per-store."},
+    {img:null,title:"Check Debt Payments and Petty Cash",desc:"Separate sections show debt payments received and petty cash taken, so you can see cash movement without opening the till yourself.",tags:["Debt Payments Received","Petty Cash, with reason for each entry"],tip:"Worth a daily glance if someone else is running the till."},
+    {img:null,title:"Compare This Week to Last Week",desc:"A chart shows this week's trading against last week's, so you can see at a glance whether things are up or down.",tags:["This Week vs Last Week chart"],tip:"This is a quick trend check, not a replacement for the full Sales Report in the app."},
+    {img:null,title:"Check Suggested Targets",desc:"Based on your current stock's retail value, the dashboard suggests a daily, weekly and monthly sales target.",tags:["Suggested Targets — daily, weekly, monthly"],tip:"These are a starting estimate from your stock value, not a guarantee — treat them as a rough goal, not gospel."}
    ]},
   {id:"printer",label:"🖨️ Receipt Printer",banner:{type:"info",text:"KasiPOS uses a USB thermal printer — available in the KasiPOS full kit. It connects with a USB cable, not Bluetooth."},
    steps:[
@@ -344,9 +360,11 @@ var GUIDES = [
 var OPS = [
   {id:"newstore",label:"🏪 New Store",banner:{type:"info",text:"Owner setup only — have your store name, area and PIN ready."},
    steps:[
-    {img:null,title:"Fill in Store Details",desc:"Enter your store name, area, store PIN, owner name and owner PIN at the top of the New Store form.",tags:["Store Name — required","Area — required","Store PIN 4-6 digits — required","Owner Name — required","Owner PIN 4-6 digits — required"],tip:"Write down your Owner PIN — you need it to approve refunds and staff changes."},
-    {img:null,title:"Choose Starter Stock",desc:"Select whether to start blank or load a starter product list. Blank stock is now the default so every new store only shows products you actually add.",tags:["Start with blank stock — default","Use starter stock pack for a quick demo instead","Drinks Snacks Bakery Cleaning available if using starter pack"],tip:"Most real stores should start blank and build their catalog from the real product list — the starter pack is just for demos."},
-    {img:null,title:"Add Your Staff",desc:"Add up to 3 cashiers now. Enter each cashier name and give them a unique PIN.",tags:["Cashier 1 name and PIN","Cashier 2 name and PIN optional","Cashier 3 name and PIN optional"],tip:"Each cashier gets their own PIN so you can track who processed each sale."},
+    {img:null,title:"Create Your Account First",desc:"If you're not already signed in, the New Store form starts by creating your account — this is what syncs your store to the cloud and the owner dashboard.",tags:["Email and password required","Password needs 8+ characters, a number, an uppercase letter, and a special character (!@#$%)","Confirm password must match"],tip:"This account and password are separate from your Store PIN and Owner PIN — different purpose, different login."},
+    {img:null,title:"Complete Identity Verification",desc:"Enter your first name, surname, and 13-digit SA ID number, then confirm consent. This goes for a quick identity review, separate from license activation.",tags:["First name and surname — required","13-digit SA ID number — required","Consent checkbox — required"],tip:"This is a one-time step per account, not per store — you won't need to redo it for additional stores on the same account."},
+    {img:null,title:"Fill in Store Details",desc:"Enter your store name, area, store PIN, owner name and owner PIN.",tags:["Store Name — required","Area — required","Store PIN 4-6 digits — required","Owner Name — required","Owner PIN 4-6 digits — required"],tip:"Write down your Owner PIN — you need it to approve refunds and staff changes."},
+    {img:null,title:"Choose Starter Stock",desc:"Select whether to start blank or load a starter product list. Blank stock is now the default so every new store only shows products you actually add.",tags:["Start with blank stock — default","Use starter stock pack for a quick demo instead","Starter pack now comes with realistic estimated cost prices already filled in"],tip:"Most real stores should start blank and build their catalog from the real product list — the starter pack is just for demos."},
+    {img:null,title:"Add Your Staff",desc:"Add up to 3 cashiers now, or skip this and add them anytime later from Cash Up, Manage Staff and Reset PINs.",tags:["Cashier 1 name and PIN","Cashier 2 name and PIN optional","Cashier 3 name and PIN optional"],tip:"Each cashier gets their own PIN so you can track who processed each sale."},
     {img:null,title:"Tap Create Store",desc:"Once all required fields are filled tap the gold Create Store button. Your store is live immediately.",tags:["Creates store instantly","Takes you to main POS screen"],tip:"Your store is ready! Add more products from Stock or start selling with the starter pack."}
    ]},
   {id:"petty",label:"💰 Petty Cash",banner:{type:"warn",text:"Owner PIN required — all petty cash must be authorised before money leaves the till."},
@@ -363,24 +381,67 @@ var OPS = [
     {img:null,title:"Save or Take Action",desc:"Choose your next action from the buttons at the bottom of the screen.",tags:["Save Cash Up — saves the record","Day End — close trading day","Cash-Up History — view previous","Backup Export — download data","Cloud Dashboard Sync — sync now"],tip:"Always sync to cloud after saving so the owner can see it on the dashboard."},
     {img:null,title:"Cash Up Saved",desc:"The cash up is saved with a timestamp and stored in history. The owner can view it on the remote dashboard.",tags:["Saved with timestamp","Visible on owner dashboard"],tip:"Tap Cloud Dashboard Sync to make the latest cash up visible immediately."}
    ]},
-  {id:"dayend",label:"🌙 Day End",coming_soon:true}
+  {id:"dayend",label:"🌙 Day End",banner:{type:"warn",text:"You must complete a Cash Up for today before Day End will let you proceed."},
+   steps:[
+    {img:null,title:"Finish Any Open Sale First",desc:"If there's anything still sitting in the cart, finish or clear it — Day End won't start with an open sale in progress.",tags:["Clear or complete the cart first"],tip:"This is a safety check so a half-finished sale never gets silently dropped."},
+    {img:null,title:"Complete Today's Cash Up",desc:"Day End checks whether today's business date already has a saved Cash Up. If it doesn't, you'll be taken straight to Cash Up instead.",tags:["Cash Up is required before Day End can run","You'll be redirected automatically if it's missing"],tip:"Do Cash Up first as a habit, then Day End — not the other way around."},
+    {img:null,title:"Tap Day End",desc:"From the Cash Up screen, tap Day End. It shows today's total sales and transaction count as a final check before closing out.",tags:["Shows total sales and transaction count for the day"],tip:"This is your last look at the day's numbers before it rolls over."},
+    {img:null,title:"The Business Day Rolls Over",desc:"Once confirmed, KasiPOS moves the business date forward to the next day. Reports and Cash Up from this point count toward the new day.",tags:["Business date advances by one day","Previous day's data stays in history, untouched"],tip:"Nothing from the closed day is ever deleted — it's just no longer today's active date."}
+   ]},
+  {id:"stocktake",label:"📝 Stock Take",banner:{type:"warn",text:"Owner approval required before any count changes real stock — nothing applies automatically."},
+   steps:[
+    {img:null,title:"Start a Count",desc:"Go to Stock, tap Stock Take, then pick a category and tap Start Counting.",tags:["Stock tab → Stock Take","Pick a category or All Categories"],tip:"Counting one category at a time keeps a stock take manageable during a busy day."},
+    {img:null,title:"Count What's On the Shelf",desc:"Type in what you physically count for each product. The system quantity is hidden on purpose while you count — this is a real count, not a guess-check against a number you've already seen.",tags:["Blind count — system quantity hidden","Progress shown as you go"],tip:"Don't try to remember what the system said earlier — just count what's actually there."},
+    {img:null,title:"Review Before Anything Changes",desc:"Once you submit, the owner reviews a full comparison — system quantity next to your count, every variance flagged, large discrepancies called out — before approving.",tags:["Owner PIN required to review","Shows Rand value of loss and overage at cost price","Nothing touches real stock until Approve is tapped"],tip:"If a number looks wrong, cancel and recount that item rather than approving a bad count."},
+    {img:null,title:"Check Past Counts Anytime",desc:"Every approved stock take is kept — who counted it, who approved it, the full variance detail, and what it cost or gained in Rand.",tags:["Stock Take → Past Counts","Tap any entry for full detail"],tip:"This is your record if you ever need to explain a shortage later."}
+   ]},
+  {id:"refund",label:"↩️ Refunds",banner:{type:"warn",text:"Owner PIN required — refunds restock the returned items automatically."},
+   steps:[
+    {img:null,title:"Find the Original Sale",desc:"Go to Track, find the sale the customer is returning from, and tap Refund on that row.",tags:["Track tab → find the sale → Refund","Owner PIN required"],tip:"You can only refund items that are still part of that specific sale."},
+    {img:null,title:"Select What's Being Returned",desc:"Pick which items and quantities are actually coming back — not necessarily the whole sale.",tags:["Partial refunds are fine — pick just what's returned"],tip:"A customer returning one item out of five doesn't need the whole sale reversed."},
+    {img:null,title:"Give a Reason and Pick the Tender",desc:"Choose a reason (damaged, wrong item, customer changed their mind, incorrect price, or other), add a note if needed, and select how the money goes back — Cash, Card, or Scan.",tags:["Reason required","Notes required if you pick Other","Refund Tender — Cash, Card, or Scan"],tip:"Picking an honest reason here is what makes your refund history actually useful later."},
+    {img:null,title:"Confirm the Refund",desc:"Tap Confirm Refund. Stock for the returned items goes back up automatically, and the refund is logged in Track history.",tags:["Stock restocked automatically","Logged permanently in Track"],tip:"You can reprint the refund receipt anytime from Track if the customer needs proof."}
+   ]},
+  {id:"exchange",label:"🔄 Exchanges",banner:{type:"warn",text:"Owner PIN required — handles the stock and any price difference in one step."},
+   steps:[
+    {img:null,title:"Find the Original Sale",desc:"Go to Track, find the sale, and tap Exchange on that row.",tags:["Track tab → find the sale → Exchange","Owner PIN required"],tip:"Same starting point as a refund — the difference is what happens next."},
+    {img:null,title:"Select What's Coming Back",desc:"Pick which items from the original sale are being exchanged, and give a reason — size or fit, wrong item sold, a fault, the customer changed their mind, or other.",tags:["Reason required","Notes required if you pick Other"],tip:"This is the item being returned, not the replacement yet."},
+    {img:null,title:"Choose the Replacement Item",desc:"Scan or search for the replacement product, set the quantity, and pick how any price difference gets settled — Cash, Card, or Scan.",tags:["Scan or type the replacement's barcode","Set quantity","Settle any difference — Cash, Card, or Scan"],tip:"If the replacement costs more, this is where that extra amount gets collected. If it costs less, it works out as money back."},
+    {img:null,title:"Confirm the Exchange",desc:"Tap Confirm Exchange. Stock adjusts for both the returned item and the replacement in one move, and it's logged in Track history.",tags:["Stock adjusts for both items automatically","Logged permanently in Track"],tip:"One exchange record shows the full picture — what came back, what went out, and what changed hands in cash."}
+   ]},
+  {id:"suppliers",label:"🚚 Suppliers",banner:{type:"info",text:"Set up suppliers before receiving stock — Receive Stock needs one linked to each delivery."},
+   steps:[
+    {img:null,title:"Open the Stock Tab",desc:"Tap + Supplier on the Stock screen to add a new one, or tap an existing supplier to edit it.",tags:["Stock tab → + Supplier"],tip:"Add your regular suppliers once, upfront — it saves time every time stock arrives after that."},
+    {img:null,title:"Fill in Supplier Details",desc:"Enter the supplier's name, phone number, sales rep name, and what category they usually supply. Notes are optional for anything else worth remembering.",tags:["Name — required","Phone, Rep, Category — optional but useful","Notes — optional"],tip:"Knowing which rep to call saves time when something's wrong with a delivery."},
+    {img:null,title:"Link Suppliers to Receiving Stock",desc:"When you tap Receive Stock to log a new delivery, you'll pick which supplier it came from — this is also where you enter the real cost price for Gross Profit and Stock Take to work accurately.",tags:["Receive Stock → pick the supplier","Enter real cost price from the invoice"],tip:"A real cost price here is what makes your profit and stock loss numbers trustworthy."}
+   ]}
 ];
 
 var QUIZ = [
   {q:"How do you add a product to the basket during a sale?",opts:["Go to Settings","Tap the product on the sell screen","Restart the app","Call support"],ans:1,exp:"Just tap the product on the sell screen to add it to the basket!"},
   {q:"What happens to sales if the internet goes down?",opts:["All sales are lost","KasiPOS stops working","Sales save offline and sync later","You must use paper"],ans:2,exp:"KasiPOS works fully offline. Sales sync automatically when internet returns."},
   {q:"Where do you see total sales for the day?",opts:["On the receipt","In the Products menu","On the Sales Dashboard","In Settings"],ans:2,exp:"The Dashboard shows daily totals, top products, busiest times and more."},
-  {q:"How do you give a staff member their own login?",opts:["Share your password","Create a staff PIN in Settings","Ask them to download another app","They use your owner PIN"],ans:1,exp:"Go to Settings and create a unique 4-digit PIN for each staff member."},
+  {q:"How do you give a staff member their own login?",opts:["Share your password","Give them a unique PIN from Cash Up, Manage Staff & Reset PINs","Ask them to download another app","They use your owner PIN"],ans:1,exp:"Go to Cash Up, tap Manage Staff and Reset PINs, and give each staff member their own unique PIN — anytime, not just at setup."},
   {q:"What does the owner remote dashboard allow?",opts:["Print receipts only","Monitor sales from any phone","Add products only","Reset the app"],ans:1,exp:"The dashboard lets you monitor your store from any phone anywhere."},
   {q:"What must happen before petty cash can be taken from the till?",opts:["Ask a cashier","Nothing just take it","Get owner PIN authorisation","Write it on paper"],ans:2,exp:"All petty cash requires owner PIN authorisation before it is approved."},
   {q:"What type of printer does KasiPOS support?",opts:["Laser printer","USB thermal printer","Bluetooth inkjet","Any printer"],ans:1,exp:"KasiPOS supports USB thermal printers — connect with a cable, small fast and affordable."},
-  {q:"How do you process a debt sale for a customer?",opts:["Not possible","Tap Debt then select or add customer","Send them an invoice","Write it in a book"],ans:1,exp:"Tap Debt on the cart screen then select an existing customer or add a new one."}
+  {q:"How do you process a debt sale for a customer?",opts:["Not possible","Tap Debt then select or add customer","Send them an invoice","Write it in a book"],ans:1,exp:"Tap Debt on the cart screen then select an existing customer or add a new one."},
+  {q:"What do you need to reset a forgotten Store PIN or Owner PIN?",opts:["Nothing, it cannot be recovered","Your account email and password, then set a new PIN","You must create a brand new store","Call the tablet manufacturer"],ans:1,exp:"Tap Forgot PIN, confirm with your account email and password, and set a new one. Your store data stays exactly as it was."},
+  {q:"Why does a KasiPOS stock take hide the system quantity while you count?",opts:["To save screen space","So you count for real instead of just confirming a number you already saw","It is a bug","Because printing is turned off"],ans:1,exp:"This is a blind count on purpose — seeing the system number first turns a real count into a guess-check against it."},
+  {q:"What happens the moment a stock take count is submitted?",opts:["Stock updates immediately","Nothing changes until the owner reviews and approves it","The store locks for the day","A receipt prints automatically"],ans:1,exp:"Counting and applying are two separate steps. The owner reviews every variance before anything touches real stock."},
+  {q:"Where can you see your actual profit, not just total sales?",opts:["Nowhere in KasiPOS","The Sales Report on the Track tab, as Gross Profit","Only by asking support","The Customers tab"],ans:1,exp:"The Sales Report shows Gross Profit using each product's cost price, alongside your revenue."},
+  {q:"What does the Stock Value card on the Stock screen tell you?",opts:["How many staff are logged in","What your current stock is worth, at both retail and cost price","Today's sales total","Nothing, it is decorative"],ans:1,exp:"It shows the Rand value of everything currently on your shelves, at both what you'd sell it for and what it cost you."},
+  {q:"What makes an Exchange different from a plain Refund?",opts:["There is no difference","It swaps the item for a replacement and settles any price difference in one step","It can only be done by WhatsApp support","It does not affect stock at all"],ans:1,exp:"An exchange handles the returned item and the replacement together, adjusting stock for both and settling any price difference by Cash, Card, or Scan."},
+  {q:"What must happen before Day End will let you close out the day?",opts:["Nothing, it always works","Today's Cash Up must already be saved","You must delete yesterday's sales","Only the Stock tab needs checking"],ans:1,exp:"Day End checks for a completed Cash Up first and sends you there automatically if it is missing."},
+  {q:"Where do you set up a supplier before receiving stock from them?",opts:["You cannot add suppliers","Stock tab, tap plus Supplier","Only during New Store setup","In the Customers tab"],ans:1,exp:"Add suppliers anytime from the Stock tab, then link deliveries to them when you tap Receive Stock."}
 ];
 
 var TROUBLE = [
-  {icon:"🖨️",title:"Printer Not Printing",desc:"Connected but nothing comes out",steps:["Check the printer is plugged into wall power, not just the USB cable","Check paper is loaded correctly","In KasiPOS tap Connect USB Printer again — the connection drops after a page refresh","Make sure you are using Chrome — other browsers do not support USB printing","Unplug and replug the USB cable, then reconnect in the app"]},
+  {icon:"🖨️",title:"Printer Not Printing",desc:"Connected but nothing comes out",steps:["Check the printer is plugged into wall power, not just the USB cable","Check paper is loaded correctly","In KasiPOS tap Connect USB Printer again — the connection drops after a page refresh","Make sure you are using Chrome — other browsers do not support USB printing","Unplug and replug the USB cable, then reconnect in the app","If Chrome shows an error mentioning \"claim interface\" after connecting, that specific tablet's Android is holding onto the printer before Chrome can — try a different tablet or device with the same printer; this is a device-level conflict, not something fixable from inside the app"]},
   {icon:"📶",title:"App Not Syncing",desc:"Sales not appearing on dashboard",steps:["Check internet connection on tablet","Toggle WiFi or mobile data off and back on","Open app and wait 30 seconds for auto-sync","Force close and reopen the app","Contact support with your store name if still not syncing"]},
-  {icon:"🔐",title:"Forgot Staff PIN",desc:"Staff member cannot log in",steps:["Log in using your owner PIN","Go to Settings then Staff Management","Find the staff member and tap Edit","Set a new 4-digit PIN","Save — they can log in immediately"]},
+  {icon:"🔐",title:"Forgot Staff PIN",desc:"Staff member cannot log in",steps:["Log in as owner","Go to Cash Up, tap Manage Staff & Reset PINs","Find the staff member and tap Reset PIN","Set a new 4-digit PIN","They can log in immediately with the new PIN"]},
+  {icon:"🔑",title:"Forgot Store PIN",desc:"Can't even open the store to log in at all",steps:["On the Select Store screen, tap the store and then tap Forgot PIN?","Sign in with your account email if you aren't already","Enter your account password to confirm it's really you","Set a brand new 4-digit Store PIN","Your store's data is completely safe through this — nothing is lost, you don't need to create a new store"]},
+  {icon:"👑",title:"Forgot Owner PIN",desc:"Locked out of owner access on a store you can already open",steps:["On the \"Who is logging in?\" screen, tap Forgot Owner PIN?","Sign in with your account email if you aren't already","Enter your account password to confirm it's really you","Set a brand new 4-digit Owner PIN","All your store data stays exactly as it was"]},
   {icon:"📦",title:"Product Not Showing",desc:"Added product not visible at checkout",steps:["Go to Stock and confirm product was saved","Check product is in the correct category","Make sure product is marked as Active","Search for it by name in the sell screen search bar","Force close and reopen the app to refresh"]},
   {icon:"📱",title:"App Running Slowly",desc:"KasiPOS is lagging or freezing",steps:["Close other apps running in the background","Restart the tablet","Check storage — delete unused photos or apps","Make sure tablet is not in battery saving mode","Uninstall and reinstall if issue persists"]},
   {icon:"💳",title:"Wrong Price on Receipt",desc:"Receipt shows incorrect amount",steps:["Go to Stock and find the item","Tap Edit and check the selling price","Correct the price and tap Save","Process a refund for the incorrect sale if needed","Reprocess the sale at the correct price"]}
@@ -397,8 +458,8 @@ var VIDEOS = [
 
 var FAQS = [
   {q:"Does KasiPOS work without internet?",a:"Yes! KasiPOS works fully offline. Sales are saved on device and sync to the cloud automatically when internet returns. Nothing is ever lost."},
-  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever. Spaza shop software only: R799. Tavern software only: R1,199. Full kit with tablet, USB thermal printer and software: R3,999. Contact us on WhatsApp 074 831 5232 to order."},
-  {q:"How do I access my store remotely?",a:"Log into kasipos-dashboard.netlify.app on any phone using your owner credentials. See all sales, reports and stock levels from anywhere."},
+  {q:"How much does KasiPOS cost?",a:"KasiPOS is a once-off payment with no monthly fees ever, and it's yours for life including future updates and support. Street vendor software: R799. Spaza shop software: R999. Tavern software: R1,199. Full kit with tablet, USB thermal printer and software — spaza or tavern: R3,999. Street vendor full kit, which includes a portable power pack for stands with no mains power: R5,499. Contact us on WhatsApp 074 831 5232 to order."},
+  {q:"How do I access my store remotely?",a:"Log into kasipos-dashboard.netlify.app on any phone using your owner credentials. See today's sales, transactions and debt across all your stores, debt payments received, petty cash, a low stock alert, a week-over-week trend chart, and suggested sales targets — all without being at the till."},
   {q:"Can I have more than one staff member?",a:"Yes. Go to Stock tab, tap the three dots on any product, and manage staff from Settings. Each staff member gets their own PIN."},
   {q:"How do I handle a debt sale?",a:"On the cart screen tap Debt, then select an existing customer or add a new one. The debt is tracked automatically in the Customers tab."},
   {q:"What if I make a mistake on a sale?",a:"Go to Track tab, find the transaction and tap Refund. The system reverses the sale and updates stock automatically."},
@@ -409,7 +470,23 @@ var FAQS = [
   {q:"How do I print a barcode label?",a:"After adding any product a prompt appears asking to print the label. Tap Print Label Now. You can also print anytime from Stock tab — tap the three dots next to a product then tap Print Barcode Label. Stick the label on the shelf so cashiers can scan at checkout."},
   {q:"What if a product has no barcode?",a:"KasiPOS automatically generates a barcode for every product — like KP-BEV-0001. Print the label and stick it on the shelf. Your cashier scans the label just like any real barcode."},
   {q:"Can I sell a product with no price?",a:"No. Products with no price set cannot be added to the cart. The system will prompt you to set the price first in the Stock tab."},
-  {q:"How does the USB receipt printer connect?",a:"With a USB cable, not Bluetooth. Plug the printer into wall power and the USB cable into your tablet, then tap Connect USB Printer in the app and select it from the list. It stays connected through many sales until you refresh the page."}
+  {q:"How does the USB receipt printer connect?",a:"With a USB cable, not Bluetooth. Plug the printer into wall power and the USB cable into your tablet, then tap Connect USB Printer in the app and select it from the list. It stays connected through many sales until you refresh the page."},
+  {q:"Can I see my actual profit, not just sales?",a:"Yes. The Sales Report (Track tab) now shows Gross Profit alongside your revenue, using each product's cost price — so you can see what you actually made, not just what you sold. Set cost prices on your products for this to show a real number."},
+  {q:"How do I know what my stock is worth?",a:"The Stock screen shows a Stock Value card — your current stock's total value at both retail price and cost price, updated live as stock changes."},
+  {q:"What if I forget my Store PIN or Owner PIN?",a:"Both are recoverable without losing any data. On the Store PIN screen tap Forgot PIN?, or on the staff login screen tap Forgot Owner PIN? — either way you confirm with your account email and password, then set a brand new PIN. Your store and all its data stay exactly as they were."},
+  {q:"Does Stock Take show how much a loss or overage actually cost me?",a:"Yes. When you approve a stock take, it shows the Rand value of any loss and overage at cost price, not just the unit count — and it's kept in Stock Take history for every past count."},
+  {q:"What's the difference between a Refund and an Exchange?",a:"A Refund gives money back and restocks the item, done. An Exchange swaps the item for something else in one step — stock adjusts for both the returned item and the replacement, and any price difference is settled by Cash, Card, or Scan. Both are started from Track tab, tap the sale, and need the owner PIN."},
+  {q:"Can a customer pay with more than one method on the same sale?",a:"Yes — tap Split Payment on the cart screen. Enter how much is Cash, how much is Card, and how much is Debt if needed, and KasiPOS tracks the remaining balance until it's fully covered."},
+  {q:"What is Scan as a payment method?",a:"Scan is for QR or scan-to-pay transactions — it sits alongside Cash and Card as a payment option on the cart, in refunds, and in exchanges."},
+  {q:"How do I add a supplier?",a:"On the Stock tab tap + Supplier. Enter their name, phone number, sales rep, and category — phone, rep and category are optional but useful. Suppliers are what you link a delivery to when you tap Receive Stock, which is also where you enter the real cost price for a product."},
+  {q:"What actually happens when I tap Day End?",a:"KasiPOS checks that today's Cash Up is already saved — if it isn't, you're sent to Cash Up first. Once that's done, Day End shows today's totals as a final check, then moves the business date forward to the next day. Nothing from the closed day is deleted, it just stops being today's active date."},
+  {q:"Why does creating a new store ask for my ID number and a password?",a:"Creating your first store also creates your account — the thing that syncs your store to the cloud and the owner dashboard. The password needs 8+ characters with a number, an uppercase letter and a special character. Your name, surname and 13-digit SA ID go through a quick identity review. This is a one-time step for your account, not repeated for every store."},
+  {q:"How do loyalty points work?",a:"Customers earn 1 point for every R10 spent — but only on Cash and Card payments, not Debt. At checkout, 1 point equals 50c off. Redeeming points on a sale means no new points are earned on that same sale. The points balance is visible on the customer's own profile in the Customers tab."},
+  {q:"What's in a customer's profile?",a:"Full name, phone, ID number, address, their debt limit, and a PIN they set themselves for credit purchases. From an existing customer you can also Collect Debt or View Account for their full history."},
+  {q:"Can I delete a store if I set it up wrong, or don't need it anymore?",a:"Yes — on the Select Store screen, tap the trash icon on that store, then confirm with that store's own PIN. This permanently removes the store and everything in it, so double check before confirming — there's no undo."},
+  {q:"How do I switch between stores if I run more than one?",a:"Tap Change Store — it's available from the staff login screen (Who is logging in?) or from the main menu — to go back to Select Store and pick a different one."},
+  {q:"How do I delete a product?",a:"Stock tab, tap the three dots next to the product, then Edit Product. There's a Delete button at the bottom of that form — owner PIN required."},
+  {q:"What is the portable power pack in the street vendor kit for?",a:"It's for a stand with no access to mains power at all — the printer still needs real power, not just a USB phone power bank, which can't run it. The printer's own power adapter plugs into the power pack's outlet exactly like it would plug into a wall socket, and the pack charges up at home overnight. If you already have power where you trade, you don't need this — it's only part of the street vendor kit for that specific situation."}
 ];
 
 var botHistory = [];
@@ -563,19 +640,45 @@ function buildFAQ() {
   }
 }
 
-var qi = 0, qs = 0;
+var qi = 0, qs = 0, shuffledQuiz = [], quizMistakes = [];
+function shuffleArray(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+  }
+  return a;
+}
+function buildShuffledQuiz() {
+  // Fresh shuffle every time the quiz starts: the question order changes,
+  // and each question's own answer options are reshuffled too so the
+  // correct answer isn't always sitting in the same position -- otherwise
+  // someone retaking it can just memorize "pick option 2" instead of
+  // actually knowing the answer.
+  var withShuffledOpts = QUIZ.map(function(q) {
+    var order = shuffleArray(q.opts.map(function(_, i) { return i; }));
+    return {
+      q: q.q,
+      opts: order.map(function(origIdx) { return q.opts[origIdx]; }),
+      ans: order.indexOf(q.ans),
+      exp: q.exp
+    };
+  });
+  return shuffleArray(withShuffledOpts);
+}
 function startQuiz() {
-  qi = 0; qs = 0;
+  qi = 0; qs = 0; quizMistakes = [];
+  shuffledQuiz = buildShuffledQuiz();
   document.getElementById("qmain").style.display = "block";
   document.getElementById("qr").classList.remove("show");
   loadQ();
 }
 function loadQ() {
-  var q = QUIZ[qi];
+  var q = shuffledQuiz[qi];
   document.getElementById("qn").textContent = "QUESTION " + (qi + 1);
   document.getElementById("qt").textContent = q.q;
-  document.getElementById("qbar").style.width = ((qi / QUIZ.length) * 100) + "%";
-  document.getElementById("qpt").textContent = "Question " + (qi + 1) + " of " + QUIZ.length;
+  document.getElementById("qbar").style.width = ((qi / shuffledQuiz.length) * 100) + "%";
+  document.getElementById("qpt").textContent = "Question " + (qi + 1) + " of " + shuffledQuiz.length;
   var o = document.getElementById("qo");
   o.innerHTML = "";
   for (var i = 0; i < q.opts.length; i++) {
@@ -592,7 +695,7 @@ function loadQ() {
   document.getElementById("qnx").className = "qnext";
 }
 function selAns(i, btn) {
-  var q = QUIZ[qi];
+  var q = shuffledQuiz[qi];
   var opts = document.querySelectorAll(".qopt");
   for (var j = 0; j < opts.length; j++) opts[j].disabled = true;
   var fb = document.getElementById("qf");
@@ -605,18 +708,38 @@ function selAns(i, btn) {
     opts[q.ans].classList.add("correct");
     fb.className = "qfb show w";
     fb.textContent = "Not quite. " + q.exp;
+    quizMistakes.push({ q: q.q, yourAnswer: q.opts[i], correctAnswer: q.opts[q.ans], exp: q.exp });
   }
   document.getElementById("qnx").className = "qnext show";
 }
 function nextQ() {
   qi++;
-  if (qi >= QUIZ.length) {
+  if (qi >= shuffledQuiz.length) {
     document.getElementById("qmain").style.display = "none";
     document.getElementById("qr").classList.add("show");
-    var p = Math.round((qs / QUIZ.length) * 100);
+    var p = Math.round((qs / shuffledQuiz.length) * 100);
     document.getElementById("qs").textContent = p + "%";
     document.getElementById("qm").textContent = p >= 80 ? "Excellent! You know KasiPOS inside out." : p >= 60 ? "Good work! Review a few guides and you will be a pro." : "Keep learning! Go through the guides and try again.";
+    renderQuizReview();
   } else { loadQ(); }
+}
+function renderQuizReview() {
+  var el = document.getElementById("qreview");
+  if (!quizMistakes.length) {
+    el.innerHTML = '<div class="qrev-perfect">&#10003; Every answer correct — nothing to review!</div>';
+    return;
+  }
+  var html = '<div class="qrev-hdr">' + quizMistakes.length + ' to review</div>';
+  for (var i = 0; i < quizMistakes.length; i++) {
+    var m = quizMistakes[i];
+    html += '<div class="qrev-item">'
+      + '<div class="qrev-q">' + m.q + '</div>'
+      + '<div class="qrev-you">Your answer: ' + m.yourAnswer + '</div>'
+      + '<div class="qrev-correct">Correct answer: ' + m.correctAnswer + '</div>'
+      + '<div class="qrev-exp">' + m.exp + '</div>'
+      + '</div>';
+  }
+  el.innerHTML = html;
 }
 
 function addMsg(txt, type, imgSrc) {
@@ -693,15 +816,15 @@ function toggleCodeBox() {
   var box = document.getElementById("bcodebox");
   box.classList.toggle("show");
   if (box.classList.contains("show")) {
-    document.getElementById("bcodeinp").value = localStorage.getItem("kasibot_code") || "";
+    document.getElementById("bcodeinp").value = localStorage.getItem("kasibot_email") || "";
   }
 }
 function saveCode() {
   var v = document.getElementById("bcodeinp").value.trim();
-  if (v) { localStorage.setItem("kasibot_code", v); }
-  else { localStorage.removeItem("kasibot_code"); }
+  if (v) { localStorage.setItem("kasibot_email", v); }
+  else { localStorage.removeItem("kasibot_email"); }
   document.getElementById("bcodebox").classList.remove("show");
-  addMsg("Code saved. Ask me anything!", "bot");
+  addMsg("Email saved. Ask me anything!", "bot");
 }
 
 function sendB() {
@@ -725,17 +848,17 @@ function sendB() {
   botHistory.push({role: "user", content: userContent});
   clearImage();
 
-  var accessCode = localStorage.getItem("kasibot_code") || "";
+  var accessEmail = localStorage.getItem("kasibot_email") || "";
 
   fetch("/.netlify/functions/chat", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({messages: botHistory, accessCode: accessCode})
+    body: JSON.stringify({messages: botHistory, accessEmail: accessEmail})
   }).then(function(r) {
     return r.json();
   }).then(function(data) {
     t.remove();
-    var reply = (data.content && data.content[0]) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
+    var reply = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : "Sorry, connection issue. Please WhatsApp us at 074 831 5232";
     if (data.accessDenied) {
       // Don't keep a rejected turn in history — otherwise it pollutes every
       // future request with an assistant message that never actually
