@@ -2,26 +2,31 @@ exports.handler = async function(event) {
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
   const KEY = process.env.ANTHROPIC_API_KEY;
-  if (!KEY) return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured' }) };
+  if (!KEY) {
+    console.error('KasiBot: ANTHROPIC_API_KEY is not set in Netlify environment variables');
+    return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured' }) };
+  }
 
-  // AI ACCESS CODE GATING
-  // KASIBOT_ACCESS_CODES is a comma-separated list of valid codes, set as a
-  // Netlify environment variable and updated manually as clients pay for the
-  // R99/month AI support add-on. If this variable is not set at all, the bot
-  // stays open to everyone — this is what keeps it free during testing.
-  // Reject BEFORE calling the Anthropic API so an invalid or missing code
-  // never costs a cent in API usage.
-  const RAW_CODES = process.env.KASIBOT_ACCESS_CODES;
-  if (RAW_CODES) {
-    const validCodes = RAW_CODES.split(',').map(c => c.trim()).filter(Boolean);
-    let submittedCode = '';
-    try { submittedCode = (JSON.parse(event.body).accessCode || '').trim(); } catch (e) {}
-    if (!submittedCode || !validCodes.includes(submittedCode)) {
+  // AI ACCESS EMAIL GATING
+  // KASIBOT_APPROVED_EMAILS is a comma-separated list of approved email
+  // addresses, set as a Netlify environment variable and updated manually
+  // as clients pay for the R99/month AI support add-on. Email instead of a
+  // shared code because a code can be passed around to anyone; an email is
+  // tied to one actual person and is easy to revoke individually. If this
+  // variable is not set at all, the bot stays open to everyone — this is
+  // what keeps it free during testing. Reject BEFORE calling the Anthropic
+  // API so an unapproved email never costs a cent in API usage.
+  const RAW_EMAILS = process.env.KASIBOT_APPROVED_EMAILS;
+  if (RAW_EMAILS) {
+    const approvedEmails = RAW_EMAILS.split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+    let submittedEmail = '';
+    try { submittedEmail = (JSON.parse(event.body).accessEmail || '').trim().toLowerCase(); } catch (e) {}
+    if (!submittedEmail || !approvedEmails.includes(submittedEmail)) {
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
         body: JSON.stringify({
-          content: [{ type: 'text', text: 'KasiBot AI support needs an active code - R99 a month. WhatsApp 074 831 5232 to subscribe or for free support during business hours.' }],
+          content: [{ type: 'text', text: 'KasiBot AI support needs an approved email - R99 a month. WhatsApp 074 831 5232 with the email you want approved, or for free support during business hours.' }],
           accessDenied: true
         })
       };
@@ -90,9 +95,11 @@ User: I already tried that twice and it still does not work this is so annoying
 Response: That sounds genuinely frustrating, especially with customers waiting. Let me get you straight to a real person - WhatsApp us right now on 074 831 5232 and someone will help you sort this out directly.
 
 PRICING:
-- Spaza shop software only: R799 once off - no monthly fees ever
+- Street vendor software only: R799 once off - no monthly fees ever
+- Spaza shop software only: R999 once off - no monthly fees ever
 - Tavern software only: R1,199 once off - no monthly fees ever
-- Full kit with tablet plus USB thermal printer plus software: R3,999 once off - no monthly fees ever
+- Full kit with tablet plus USB thermal printer plus software, spaza or tavern: R3,999 once off - no monthly fees ever
+- Street vendor full kit, includes a portable power pack for stands with no mains power: R5,499 once off - no monthly fees ever
 - Bulk and partnership pricing available for organizations and NGOs
 - Contact WhatsApp 074 831 5232 to order or for pricing enquiries
 
@@ -127,6 +134,7 @@ CAMERA FEATURE FOR PRODUCTS:
 - The rear camera opens automatically - point at the product and take the photo
 - Photo previews immediately and uploads automatically
 - Products without photos show a box placeholder icon instead of a real image
+- If a photo was just taken or chosen, Save must wait until the upload finishes - the app blocks saving early and tells you to wait, rather than silently saving with no photo
 
 SCREEN ALWAYS ON:
 - KasiPOS keeps the screen on automatically while the app is open using Wake Lock technology
@@ -154,27 +162,92 @@ SELL TAB - PROCESSING SALES:
 
 LOYALTY POINTS SYSTEM:
 - Customers earn 1 point for every R10 spent on Cash and Card payments only
-- Points are NOT earned on Debt sales
-- At checkout, if a customer is attached, available points are displayed and can be redeemed - 1 point equals R1 discount
+- Points are NOT earned on Debt sales, and redeeming points on a sale means no new points are earned on that same sale
+- At checkout, if a customer is attached, available points are displayed and can be redeemed - 1 point equals 50c discount
 - Points balance is visible on the customer profile in the Customers tab
 
+CUSTOMER PROFILES:
+- Add or edit from the Customers tab - full name, phone, ID number, address, debt limit, and a customer PIN they set themselves for credit purchases
+- From an existing customer's profile - Collect Debt to record a payment, or View Account for their full history
+
+DELETING THINGS:
+- Delete a product - Stock tab, tap the three dots next to it, Edit Product, then Delete at the bottom of that form - owner PIN required
+- Delete a whole store - on the Select Store screen, tap the trash icon next to a store, confirm with that store's own PIN, then confirm again - this permanently removes it and all its data, there is no undo
+- Switch between stores - tap Change Store, available from the staff login screen or the main menu, to return to the Select Store screen and pick a different one
+
 NEW STORE SETUP:
-- Requires store name, area, store PIN, owner name and owner PIN
+- The first thing that happens, before store name or PIN, is creating an account - this is what syncs the store to the cloud and the owner dashboard
+- Account creation needs an email and a password with at least 8 characters, a number, an uppercase letter, and a special character like !@#$%
+- Identity verification comes next - first name, surname, and a 13-digit South African ID number, plus a consent checkbox - this goes for a quick review and is a one-time step per account, not repeated for every store
+- After that, requires store name, area, store PIN, owner name and owner PIN
 - You choose whether to start with blank stock or a starter stock pack
 - Blank stock is the default - most real stores should start blank and build their catalog from the real product list
-- The starter pack is only meant for quick demos
-- Add up to 3 cashiers with their own PINs during setup
+- The starter pack is only meant for quick demos, and its products now come with reasonable estimated cost prices already filled in, not zero
+- Add up to 3 cashiers with their own PINs during setup, or skip and add them anytime later from Cash Up, Manage Staff and Reset PINs
 
 STAFF AND SECURITY SYSTEM:
 - PIN-based login for every staff member - each cashier has a unique PIN
 - Owner PIN required for refunds, exchanges, reprints, debt sales, petty cash, adding or editing products, deleting products, staff changes, and Day End
+- Owner can add, edit, or remove staff and reset anyone's PIN anytime from Cash Up, under Manage Staff and Reset PINs - not just once at setup
+- Forgot Store PIN or Forgot Owner PIN - both are recoverable without losing any store data, by confirming the account email and password instead of the forgotten PIN, then setting a new one
 
 STOCK TAB:
 - View all products with stock levels, prices, barcodes and supplier links
 - Low stock badge appears when a product falls to or below its minimum stock level
+- A Stock Value card shows what current stock is worth at both retail and cost price
 - Add product - tap Add Product or Catalog, fill in name, price, stock quantity, category and supplier - owner PIN required
 - Price and stock quantity are required - cannot save without them
 - Edit or delete a product - tap the three dots next to it then Edit Product - owner PIN required
+
+STOCK TAKE:
+- Go to Stock, tap Stock Take, pick a category, start counting
+- Counting is blind - the system quantity is hidden while you count, so it is a real count, not a guess-check
+- Submitting a count opens a review screen for the owner - system quantity shown next to what was counted, every variance flagged, large discrepancies called out - nothing changes real stock until the owner approves
+- The review shows the Rand value of any loss or overage at cost price, not just the unit difference
+- Every approved stock take is kept in Past Counts - who counted it, who approved it, full detail, forever
+
+REPORTS AND PROFIT:
+- The Sales Report (Track tab) shows Gross Profit alongside revenue, using each product's cost price, with a per-product profit breakdown
+- Set a real cost price on each product for this to reflect an accurate number
+
+OWNER DASHBOARD:
+- A separate site, kasipos-dashboard.netlify.app, for checking stores remotely from any phone - not the same screen as the in-app Sales Report, and does not have the same date-range filtering
+- Shows Total Stores, Sales Today, Transactions today, and Debt Owed, combined across every store on the account if there is more than one
+- Debt Payments Received and Petty Cash are shown as their own sections
+- A low stock alert lists products running low
+- A This Week vs Last Week chart gives a quick trend comparison
+- Suggested Targets shows a daily, weekly and monthly sales goal estimated from current stock's retail value - a starting estimate, not a guarantee
+
+PAYMENT METHODS:
+- Four tender types on the cart screen - Cash, Card, Scan for QR or scan-to-pay, and Debt
+- Split Payment lets a customer pay with more than one method on the same sale - enter how much is Cash, Card or Debt and KasiPOS tracks the remaining balance until it is fully covered
+
+REFUNDS:
+- Go to Track tab, find the sale, tap Refund - owner PIN required
+- Pick which items and quantities are actually being returned, not necessarily the whole sale
+- Give a reason - damaged, wrong item, customer changed their mind, incorrect price, or other - and notes are required if you pick other
+- Choose the Refund Tender - Cash, Card, or Scan
+- Stock for the returned items goes back up automatically, and it is logged permanently in Track
+- The receipt can be reprinted anytime from Track
+
+EXCHANGES:
+- Go to Track tab, find the sale, tap Exchange - owner PIN required
+- Pick which items are being returned and give a reason - size or fit, wrong item sold, a fault, changed preference, or other
+- Scan or search for the replacement item, set the quantity, and pick how any price difference is settled - Cash, Card, or Scan
+- Stock adjusts for both the returned item and the replacement in one move, logged permanently in Track
+- The difference from a plain refund is that an exchange swaps the item and settles any price difference in one step, rather than just giving money back
+
+SUPPLIERS:
+- Go to Stock tab, tap plus Supplier, to add one - or tap an existing supplier to edit it
+- Name is required - phone, sales rep, category and notes are optional but useful
+- Suppliers are linked when you tap Receive Stock to log a delivery - this is also where the real cost price from the invoice gets entered, which is what makes Gross Profit and Stock Take loss and overage figures accurate
+
+DAY END:
+- Done from the Cash Up screen, tap Day End, once trading is finished for the day
+- If there is anything in the cart it must be finished or cleared first
+- Today's Cash Up must already be saved - if it is not, Day End sends you to Cash Up first automatically
+- Shows total sales and transaction count for the day as a final check
+- Once confirmed, the business date moves forward to the next day - nothing from the closed day is deleted, it simply stops being the active day
 
 DEBT BOOK SYSTEM:
 - Debt sales link a purchase to a registered customer account
@@ -200,6 +273,7 @@ RECEIPT PRINTER:
 - Must use Chrome - USB printing does not work in Samsung Internet or other browsers
 - The connection stays active through many sales in a row but is lost if the page refreshes or the tab closes - just tap Connect USB Printer again
 - Troubleshoot - check the printer is plugged into wall power, check paper is loaded, confirm you are using Chrome, tap Connect USB Printer again, unplug and replug the USB cable
+- If Chrome shows an error mentioning claim interface after connecting, that specific device's Android is holding onto the printer before Chrome can reach it - this is a device-level conflict, not something fixable from inside the app - try a different tablet or device with the same printer
 
 BACKUP AND RESTORE:
 - Go to Cash Up tab and tap Backup or Export to download a copy of your store data
@@ -211,8 +285,15 @@ SUPPORT:
 - Live app - kasipos-app.netlify.app
 - Owner dashboard - kasipos-dashboard.netlify.app`;
 
+  let body;
   try {
-    const body = JSON.parse(event.body);
+    body = JSON.parse(event.body);
+  } catch (err) {
+    console.error('KasiBot: failed to parse request body', err.message);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request body' }) };
+  }
+
+  try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -227,7 +308,26 @@ SUPPORT:
         messages: body.messages
       })
     });
+
     const data = await response.json();
+
+    // This is the fix: previously any error from Anthropic (bad key, rate
+    // limit, invalid request) was forwarded to the frontend as if it were a
+    // normal 200 response. The frontend correctly couldn't find .content,
+    // silently fell back to the WhatsApp message, and the real cause was
+    // never visible anywhere -- not in the UI, not in these logs. Now the
+    // actual error is logged here (check Netlify's function logs for this
+    // site to see it) and the frontend still gets a clean, honest fallback.
+    if (!response.ok) {
+      console.error('KasiBot: Anthropic API returned an error', response.status, JSON.stringify(data));
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({
+          content: [{ type: 'text', text: 'Sorry, I am having trouble connecting right now. Please WhatsApp us at 074 831 5232 for immediate help.' }]
+        })
+      };
+    }
 
     // Force numbered steps onto their own lines — the model does not
     // reliably add real line breaks between steps on its own, which
@@ -249,6 +349,7 @@ SUPPORT:
       body: JSON.stringify(data)
     };
   } catch (err) {
+    console.error('KasiBot: request to Anthropic failed entirely', err.message);
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
 };
