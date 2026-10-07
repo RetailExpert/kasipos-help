@@ -46,6 +46,7 @@ h2 em{color:var(--gold);font-style:normal;}
 .vtag{font-size:11px;color:var(--text);padding:2px 0;padding-left:12px;position:relative;}
 .vtag:before{content:"•";color:var(--gold);position:absolute;left:0;}
 .vtip{margin-top:8px;padding:6px 10px;background:rgba(201,168,76,0.1);border:1px solid var(--border);border-radius:5px;font-size:11px;color:var(--gold);line-height:1.4;}
+.vidbox{margin-bottom:14px;}.vidbox .vt{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin:0 0 6px;}.vidbox video{width:100%;max-width:300px;display:block;margin:0 auto 12px;border-radius:12px;border:1px solid var(--border);background:#000;}
 .banner{padding:10px 12px;border-radius:7px;margin-bottom:12px;font-size:12px;line-height:1.5;}
 .banner.info{background:rgba(52,152,219,0.1);border:1px solid rgba(52,152,219,0.3);color:#7ec8e3;}
 .banner.warn{background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);color:#e88;}
@@ -219,7 +220,7 @@ footer em{color:var(--gold);font-style:normal;}
 
 <div id="s-videos" class="sec">
   <h2>VIDEO <em>TUTORIALS</em></h2>
-  <p class="sub">Short videos covering every feature</p>
+  <p class="sub">Short videos showing how to use KasiPOS, step by step.</p>
   <div class="vgrid" id="vg"></div>
 </div>
 
@@ -320,14 +321,14 @@ footer em{color:var(--gold);font-style:normal;}
 var IMGS = {};
 
 var GUIDES = [
-  {id:"sell",label:"🛒 Processing a Sale",banner:{type:"tip",text:"Most used feature — cashiers must know this perfectly."},
+  {id:"sell",label:"🛒 Processing a Sale",videos:[{title:"Making a cash sale",src:"videos/make-a-sale.mp4"},{title:"Selling on debt (owner approval + customer PIN)",src:"videos/sell-on-debt.mp4"},{title:"Customers and loyalty points",src:"videos/customers-and-loyalty.mp4"}],banner:{type:"tip",text:"Most used feature — cashiers must know this perfectly."},
    steps:[
     {img:null,title:"Open the Sell Screen",desc:"Tap SELL at the bottom navigation bar. You will see the full product grid with categories at the top.",tags:["All products shown by default","Filter by category tabs","Search or scan barcode at top"],tip:"Make sure you are logged in with your staff PIN before starting a sale."},
     {img:null,title:"Find and Add Products",desc:"Tap any product to add it to the basket. The gold bar at the bottom shows the running total and item count.",tags:["Tap once to add 1 item","Tap again to add more","Gold bar shows running total"],tip:"Use the category tabs to find products faster instead of scrolling."},
     {img:null,title:"Review the Cart",desc:"The cart slides up showing all items, quantities and the total. Use plus and minus to adjust or Clear to start over.",tags:["Item name and price shown","Plus and minus to change quantity","Clear button removes all items"],tip:"Always double check the total before charging the customer."},
     {img:null,title:"Select Payment and Charge",desc:"Choose how the customer is paying — Cash, Card, Scan, or Debt. For debt link to Existing or New Customer. If they're paying with more than one method, tap Split Payment instead.",tags:["Cash — most common","Card — card machine","Scan — QR or scan-to-pay","Debt — customer owes, Existing or New Customer","Split Payment — mix two or more methods on one sale"],tip:"Tap CHARGE to complete the sale. Stock updates automatically."}
    ]},
-  {id:"product",label:"📦 Adding Products",banner:{type:"info",text:"Owner access required to add or edit products."},
+  {id:"product",label:"📦 Adding Products",videos:[{title:"Adding a product",src:"videos/add-a-product.mp4"}],banner:{type:"info",text:"Owner access required to add or edit products."},
    steps:[
     {img:null,title:"Go to Stock Tab",desc:"Tap STOCK in the bottom navigation bar.",tags:["Bottom nav tap STOCK"],tip:"Only the owner PIN can add or edit products."},
     {img:null,title:"Check the Catalog First",desc:"Tap the Catalog button to search 140+ pre-loaded South African products with real images. Find your product and tap it to add.",tags:["140+ SA products ready","Real product images included","Search by name or brand"],tip:"Catalog products save you time — images and category are already set up."},
@@ -335,7 +336,7 @@ var GUIDES = [
     {img:null,title:"Snap a Product Photo",desc:"When adding manually, tap the camera button at the top of the form. Your phone camera opens — snap the product and it uploads automatically.",tags:["📷 Take Photo button","Rear camera opens","Photo saves with product"],tip:"Catalog products already have photos. Only use the camera for products not in the catalog."},
     {img:null,title:"Save and Print Label",desc:"Tap Save Product or Add to My Store. After saving, a prompt asks if you want to print a barcode label. Tap Print Label Now, then stick the label on the shelf.",tags:["Barcode auto-generated","Label prints on thermal printer","Stick label on shelf"],tip:"Always print the label immediately after adding — this is how cashiers scan at checkout."}
    ]},
-  {id:"reports",label:"📊 Sales Reports",banner:{type:"tip",text:"This is the in-app report — for remote monitoring from your phone, see the Owner Dashboard guide instead."},
+  {id:"reports",label:"📊 Sales Reports",videos:[{title:"Reading your sales report",src:"videos/sales-report.mp4"}],banner:{type:"tip",text:"This is the in-app report — for remote monitoring from your phone, see the Owner Dashboard guide instead."},
    steps:[
     {img:null,title:"Open the Sales Report",desc:"Go to Track tab, pick a report period, then tap Sales Report.",tags:["Track tab → Sales Report","Report periods — Today, This Week, MTD, YTD, or a custom From and To date"],tip:"MTD means Month to Date, YTD means Year to Date — both run from the start of that period through today."},
     {img:null,title:"Read Your Numbers",desc:"See net sales, the cash and card split, debt issued versus collected, and refunds for the period you picked.",tags:["Net sales","Cash and Card breakdown","Debt issued and collected","Refunds"],tip:"Check this against your Cash Up to make sure the two agree."},
@@ -349,7 +350,7 @@ var GUIDES = [
     {img:null,title:"Compare This Week to Last Week",desc:"A chart shows this week's trading against last week's, so you can see at a glance whether things are up or down.",tags:["This Week vs Last Week chart"],tip:"This is a quick trend check, not a replacement for the full Sales Report in the app."},
     {img:null,title:"Check Suggested Targets",desc:"Based on your current stock's retail value, the dashboard suggests a daily, weekly and monthly sales target.",tags:["Suggested Targets — daily, weekly, monthly"],tip:"These are a starting estimate from your stock value, not a guarantee — treat them as a rough goal, not gospel."}
    ]},
-  {id:"printer",label:"🖨️ Receipt Printer",banner:{type:"info",text:"KasiPOS uses a USB thermal printer — available in the KasiPOS full kit. It connects with a USB cable, not Bluetooth."},
+  {id:"printer",label:"🖨️ Receipt Printer",videos:[{title:"Connecting your receipt printer",src:"videos/receipt-printer.mp4"}],banner:{type:"info",text:"KasiPOS uses a USB thermal printer — available in the KasiPOS full kit. It connects with a USB cable, not Bluetooth."},
    steps:[
     {img:null,title:"Power On the Printer",desc:"Plug the printer into its own wall power adapter and press the power button. The printer needs its own power — the USB cable alone cannot run it.",tags:["Plug into wall power separately","Power light confirms it is on","Check paper is loaded"],tip:"Keep the printer plugged into the wall at all times during trading, not just connected to the tablet."},
     {img:null,title:"Connect the USB Cable",desc:"Plug the USB cable into the tablet and the printer. In KasiPOS, tap Connect USB Printer and select the printer from the list that appears, then tap Connect.",tags:["USB cable required — not Bluetooth","Tap Connect USB Printer in the app","Select the printer, then tap Connect"],tip:"You only need to reconnect if you refresh the page, close the tab, or restart the tablet — it stays connected through many sales in a row."},
@@ -358,7 +359,7 @@ var GUIDES = [
 ];
 
 var OPS = [
-  {id:"newstore",label:"🏪 New Store",banner:{type:"info",text:"Owner setup only — have your store name, area and PIN ready."},
+  {id:"newstore",label:"🏪 New Store",videos:[{title:"Setting up a new store",src:"videos/new-store.mp4"}],banner:{type:"info",text:"Owner setup only — have your store name, area and PIN ready."},
    steps:[
     {img:null,title:"Create Your Account First",desc:"If you're not already signed in, the New Store form starts by creating your account — this is what syncs your store to the cloud and the owner dashboard.",tags:["Email and password required","Password needs 8+ characters, a number, an uppercase letter, and a special character (!@#$%)","Confirm password must match"],tip:"This account and password are separate from your Store PIN and Owner PIN — different purpose, different login."},
     {img:null,title:"Complete Identity Verification",desc:"Enter your first name, surname, and 13-digit SA ID number, then confirm consent. This goes for a quick identity review, separate from license activation.",tags:["First name and surname — required","13-digit SA ID number — required","Consent checkbox — required"],tip:"This is a one-time step per account, not per store — you won't need to redo it for additional stores on the same account."},
@@ -374,7 +375,7 @@ var OPS = [
     {img:null,title:"Request Authorisation",desc:"Tap Request Authorization. The owner enters their PIN to approve the withdrawal.",tags:["Owner PIN required to approve","Cannot proceed without approval"],tip:"Without owner approval the petty cash is not recorded and the withdrawal is blocked."},
     {img:null,title:"Petty Cash Recorded",desc:"Once approved the amount is deducted from the till total and logged automatically with timestamp and reason.",tags:["Appears in Cash-Up History","Timestamp and reason recorded"],tip:"View all petty cash transactions in Cash-Up History at any time."}
    ]},
-  {id:"cashup",label:"🧾 Cash Up",banner:{type:"tip",text:"Do this at end of every shift — reconciles your cash and card sales for the day."},
+  {id:"cashup",label:"🧾 Cash Up",videos:[{title:"Doing your daily cash up",src:"videos/cash-up.mp4"}],banner:{type:"tip",text:"Do this at end of every shift — reconciles your cash and card sales for the day."},
    steps:[
     {img:null,title:"Open Cash Up Screen",desc:"Tap CASH UP in the bottom navigation. You will see the full cash reconciliation screen.",tags:["Expected Speed Point Total — system calculated","Physical Card Machine Total — you enter this","Variance shown automatically","Total Banked combined"],tip:"The system already knows what you should have. Your job is to count and enter the physical cash."},
     {img:null,title:"Count and Enter Amounts",desc:"Count all physical cash in the till. Enter the total. If you have a card machine enter that total separately.",tags:["Count all notes and coins","Enter physical cash total","Enter card machine total if applicable"],tip:"If variance shows Short in red — your cash is less than expected. Investigate before saving."},
@@ -448,12 +449,14 @@ var TROUBLE = [
 ];
 
 var VIDEOS = [
-  {icon:"🛒",title:"How to Process Your First Sale",desc:"Full walkthrough of checkout from products to payment.",dur:"2:34"},
-  {icon:"📦",title:"Setting Up Your Products",desc:"Add products, set prices and organise categories.",dur:"3:12"},
-  {icon:"📊",title:"Reading Your Sales Dashboard",desc:"Understand your reports and how to use data to grow.",dur:"2:58"},
-  {icon:"🖨️",title:"Connecting Your Receipt Printer",desc:"USB cable setup and printing your first receipt.",dur:"2:10"},
-  {icon:"🏪",title:"Setting Up a New Store",desc:"Full new store creation walkthrough with staff and stock.",dur:"3:25"},
-  {icon:"🧾",title:"Doing Your Daily Cash Up",desc:"Count cash, enter totals and save your cash up correctly.",dur:"2:45"}
+  {icon:"🛒",title:"How to Make a Sale",desc:"Add items, take cash, give change and get the receipt.",dur:"0:33",src:"videos/make-a-sale.mp4"},
+  {icon:"📒",title:"Selling on Debt",desc:"Credit customers, owner approval and the customer's own PIN.",dur:"0:52",src:"videos/sell-on-debt.mp4"},
+  {icon:"📦",title:"Adding a Product",desc:"Name, price, stock, supplier and cost price.",dur:"0:45",src:"videos/add-a-product.mp4"},
+  {icon:"⭐",title:"Customers and Loyalty Points",desc:"Add a loyalty customer and earn points on a sale.",dur:"0:53",src:"videos/customers-and-loyalty.mp4"},
+  {icon:"📊",title:"Reading Your Sales Report",desc:"Net sales, cash and card split, profit and top products.",dur:"0:36",src:"videos/sales-report.mp4"},
+  {icon:"🖨️",title:"Connecting Your Receipt Printer",desc:"Power, USB cable and connecting the printer in KasiPOS.",dur:"0:29",src:"videos/receipt-printer.mp4"},
+  {icon:"🏪",title:"Setting Up a New Store",desc:"Store details, PINs, starter stock and cashiers.",dur:"0:55",src:"videos/new-store.mp4"},
+  {icon:"🧾",title:"Doing Your Daily Cash Up",desc:"Count cash, enter card totals and save your cash up.",dur:"0:38",src:"videos/cash-up.mp4"}
 ];
 
 var FAQS = [
@@ -574,6 +577,20 @@ function buildTabSet(data, tabsId, panelsId) {
           bd.innerHTML = bicon + " " + g.banner.text;
           panel.appendChild(bd);
         }
+        if (g.videos && g.videos.length) {
+          var vb = document.createElement("div");
+          vb.className = "vidbox";
+          for (var vi = 0; vi < g.videos.length; vi++) {
+            var vt = document.createElement("div");
+            vt.className = "vt";
+            vt.textContent = "\uD83C\uDFAC Watch: " + g.videos[vi].title;
+            var ve = document.createElement("video");
+            ve.controls = true; ve.preload = "none"; ve.setAttribute("playsinline", "");
+            ve.src = g.videos[vi].src;
+            vb.appendChild(vt); vb.appendChild(ve);
+          }
+          panel.appendChild(vb);
+        }
         for (var s = 0; s < g.steps.length; s++) {
           panel.appendChild(buildStep(g.steps[s], s));
         }
@@ -583,6 +600,24 @@ function buildTabSet(data, tabsId, panelsId) {
   }
 }
 
+function playVideo(v) {
+  var o = document.createElement("div");
+  o.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px;";
+  var t = document.createElement("div");
+  t.style.cssText = "color:#f5c518;font-weight:800;font-size:14px;margin-bottom:10px;text-align:center;";
+  t.textContent = v.title;
+  var ve = document.createElement("video");
+  ve.src = v.src; ve.controls = true; ve.autoplay = true; ve.setAttribute("playsinline", "");
+  ve.style.cssText = "max-width:100%;max-height:78vh;border-radius:12px;background:#000;";
+  var x = document.createElement("button");
+  x.textContent = "Close";
+  x.style.cssText = "margin-top:12px;padding:10px 28px;border-radius:8px;border:1px solid #f5c518;background:transparent;color:#f5c518;font-weight:800;cursor:pointer;";
+  function close() { ve.pause(); o.remove(); }
+  x.onclick = close; o.onclick = function(e) { if (e.target === o) close(); };
+  o.appendChild(t); o.appendChild(ve); o.appendChild(x);
+  document.body.appendChild(o);
+}
+
 function buildVideos() {
   var g = document.getElementById("vg");
   for (var i = 0; i < VIDEOS.length; i++) {
@@ -590,7 +625,10 @@ function buildVideos() {
       var c = document.createElement("div");
       c.className = "vcard";
       c.innerHTML = '<div class="vthumb"><div class="vticon">' + v.icon + '</div><div class="vplay">&#9654;</div><div class="vdur">' + v.dur + '</div></div><div class="vinfo"><div class="vtit">' + v.title + '</div><div class="vdes">' + v.desc + '</div></div>';
-      c.onclick = function() { alert("Video coming soon: " + v.title + "\n\nCheck the Guides section for the same content."); };
+      c.onclick = function() {
+        if (!v.src) { alert("Video coming soon: " + v.title + "\n\nCheck the Guides section for the same content."); return; }
+        playVideo(v);
+      };
       g.appendChild(c);
     })(VIDEOS[i]);
   }
