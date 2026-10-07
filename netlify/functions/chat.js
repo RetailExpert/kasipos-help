@@ -90,7 +90,7 @@ SELL TAB: Product grid with categories and images, tap to add to basket. Search 
 
 LOYALTY: 1 point per R10 spent, Cash and Card only, not Debt. Redeeming points earns no new points on that sale. 1 point = 50c off at checkout. Balance visible on the customer's profile.
 
-CUSTOMERS: Add/edit from Customers tab - name, phone, ID number, address, debt limit, a customer PIN they set themselves. From a profile: Collect Debt to record payment, View Account for full history.
+CUSTOMERS: Add/edit from Customers tab - name, phone, ID number, address, debt limit, a customer PIN they set themselves. LOYALTY-ONLY customers need just name and phone (debt limit 0). CREDIT customers must have a 13-digit ID number, an address, a debt limit and a 4-6 digit PIN, and the system blocks debt until all are filled in. Debt (full or the debt part of a Split Payment) needs owner approval first (owner PIN, unless the owner is logged in), then the customer types their own PIN. FORGOTTEN CUSTOMER PIN: only the owner can reset it. Customers tab, open the customer, Reset Customer PIN, owner approves, customer types a new PIN twice themselves; the old PIN stops working and each reset is logged. From a profile: Collect Debt to record payment, View Account for full history.
 
 DELETING: Product - Stock tab, three dots, Edit Product, Delete at the bottom - owner PIN. Whole store - trash icon on Select Store, confirm with that store's PIN - permanent, no undo. Switch stores - Change Store, from staff login or main menu.
 
